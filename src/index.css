@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* §10 Design: Unbounded (headings), Inter (body), JetBrains Mono (tags/timecodes) */
+@theme inline {
+    --font-heading: 'Unbounded', 'Space Grotesk', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* §10 Brand colours mapped to shadcn tokens */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-destructive: var(--destructive);
+
+    /* Brand extras */
+    --color-brand-amber: #F2C94C;
+    --color-brand-violet: #7C5CFF;
+    --color-brand-black: #0F0F12;
+    --color-paper: #F5F1E8;
+
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* ── Light mode: тёплая бумага §10 ── */
+:root {
+    /* Backgrounds */
+    --background: #F5F1E8;        /* paper */
+    --foreground: #1A1A1F;        /* ink */
+    --card: #EDEADE;
+    --card-foreground: #1A1A1F;
+    --popover: #F5F1E8;
+    --popover-foreground: #1A1A1F;
+
+    /* Primary = amber accent §10 */
+    --primary: #F2C94C;
+    --primary-foreground: #0F0F12;
+
+    /* Secondary */
+    --secondary: #E8E3D8;
+    --secondary-foreground: #1A1A1F;
+
+    /* Muted */
+    --muted: #E2DDD4;
+    --muted-foreground: #6B6860;
+
+    /* Accent = violet §10 */
+    --accent: #7C5CFF;
+    --accent-foreground: #F5F1E8;
+
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: #D4CFCA;
+    --input: #D4CFCA;
+    --ring: #F2C94C;
+    --radius: 0.625rem;
+}
+
+/* ── Dark mode: виниловый конверт §10 ── */
+.dark {
+    --background: #16161A;        /* dark bg */
+    --foreground: #EDEDEF;        /* dark text */
+    --card: #1E1E24;
+    --card-foreground: #EDEDEF;
+    --popover: #1E1E24;
+    --popover-foreground: #EDEDEF;
+
+    --primary: #F2C94C;
+    --primary-foreground: #0F0F12;
+
+    --secondary: #252530;
+    --secondary-foreground: #EDEDEF;
+
+    --muted: #252530;
+    --muted-foreground: #8E8E9A;
+
+    --accent: #7C5CFF;
+    --accent-foreground: #EDEDEF;
+
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: rgba(255,255,255,0.1);
+    --input: rgba(255,255,255,0.12);
+    --ring: #F2C94C;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground font-sans;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+    }
+    code, kbd, pre {
+        font-family: var(--font-mono);
+    }
+}
