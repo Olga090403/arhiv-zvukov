@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Play, Plus, Search } from "lucide-react";
+import { Play, Plus, Search, SearchX } from "lucide-react";
 import { MOCK_SOUNDS, CATEGORIES, formatDuration, searchSounds } from "@/lib/mockData";
+import SoundCardSkeleton from "@/components/SoundCardSkeleton";
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
@@ -15,6 +16,14 @@ export default function SearchPage() {
   const initialQ = params.get("q") ?? "";
   const [query, setQuery] = useState(initialQ);
   const [activeCategory, setActiveCategory] = useState("Все");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setQuery(initialQ);
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(t);
+  }, [initialQ]);
 
   const results = useMemo(
     () => searchSounds(initialQ, activeCategory),
@@ -65,15 +74,26 @@ export default function SearchPage() {
         <h2 className="font-heading text-2xl font-semibold">
           {initialQ ? `«${initialQ}»` : "Все звуки"}
         </h2>
-        <p className="text-sm text-muted-foreground">
-          {results.length > 0
-            ? `${results.length} звук${results.length === 1 ? "" : "а"} найдено`
-            : "Ничего не найдено — смотри похожие ниже"}
-        </p>
+        {!loading && (
+          <p className="text-sm text-muted-foreground">
+            {results.length > 0
+              ? `${results.length} звук${results.length === 1 ? "" : results.length < 5 ? "а" : "ов"}`
+              : "Ничего не найдено"}
+          </p>
+        )}
       </div>
 
+      {/* Loading skeletons */}
+      {loading && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SoundCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
       {/* Results grid */}
-      {results.length > 0 && (
+      {!loading && results.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((sound) => (
             <SoundCard
@@ -88,8 +108,25 @@ export default function SearchPage() {
         </div>
       )}
 
+      {/* Empty state */}
+      {!loading && results.length === 0 && (
+        <div className="flex flex-col items-center gap-4 py-16 text-center">
+          <SearchX className="h-12 w-12 text-muted-foreground/40" />
+          <div className="space-y-1">
+            <p className="font-heading text-lg font-semibold">Ничего не найдено</p>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Попробуй другой запрос или выбери категорию.
+              Архив пополняется — скоро здесь будет больше звуков.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => { setParams({}); setActiveCategory("Все"); }}>
+            Сбросить фильтры
+          </Button>
+        </div>
+      )}
+
       {/* Similar block when no results */}
-      {similar.length > 0 && (
+      {!loading && similar.length > 0 && (
         <>
           <Separator />
           <div className="space-y-4">
@@ -128,7 +165,6 @@ function SoundCard({ sound, onOpen, onAddToMixer }: SoundCardProps) {
       onClick={onOpen}
     >
       <CardContent className="p-4 space-y-3">
-        {/* Mini waveform */}
         <div className="flex h-10 items-center gap-0.5">
           {Array.from({ length: 32 }).map((_, i) => (
             <div
@@ -166,10 +202,7 @@ function SoundCard({ sound, onOpen, onAddToMixer }: SoundCardProps) {
             size="sm"
             variant="ghost"
             className="flex-1 gap-1.5 group-hover:bg-primary group-hover:text-primary-foreground text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
+            onClick={(e) => { e.stopPropagation(); onOpen(); }}
           >
             <Play className="h-3 w-3" />
             Открыть
@@ -178,10 +211,7 @@ function SoundCard({ sound, onOpen, onAddToMixer }: SoundCardProps) {
             size="sm"
             variant="outline"
             className="gap-1.5 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToMixer();
-            }}
+            onClick={(e) => { e.stopPropagation(); onAddToMixer(); }}
           >
             <Plus className="h-3 w-3" />
             В микс

@@ -5,6 +5,7 @@ import SearchPage from "@/pages/SearchPage";
 import SoundPage from "@/pages/SoundPage";
 import MixerPage from "@/pages/MixerPage";
 import UploadPage from "@/pages/UploadPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="sound/:id" element={<SoundPage />} />
         <Route path="mixer" element={<MixerPage />} />
         <Route path="upload" element={<UploadPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import SoundCardSkeleton from "@/components/SoundCardSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Play, Shuffle, ArrowRight } from "lucide-react";
@@ -12,7 +13,13 @@ const EXAMPLES = MOCK_SOUNDS.slice(0, 3);
 
 export default function LandingPage() {
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
+  }, []);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -103,7 +110,10 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {EXAMPLES.map((sound) => (
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => <SoundCardSkeleton key={i} />)
+            : null}
+          {!loading && EXAMPLES.map((sound) => (
             <Card
               key={sound.id}
               className="group cursor-pointer transition-colors hover:border-primary"
