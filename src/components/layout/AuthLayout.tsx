@@ -13,54 +13,23 @@ export default function AuthLayout({ children, heading, subheading }: AuthLayout
 
         {/* ── Left: warm gradient panel ── */}
         <div className="relative hidden flex-col justify-between overflow-hidden p-10 md:flex min-h-[540px]"
-          style={{ background: "#FDF6EE" }}
+          style={{
+            background: "linear-gradient(145deg, #FDF6EE 0%, #FCEBD4 20%, #F8C86C 45%, #F2994A 65%, #E8643A 85%, #D94E3B 100%)",
+          }}
         >
-          {/* Primary blob — warm orange, organic shape */}
+          {/* Amber blob */}
           <div
             className="absolute"
             style={{
-              width: 420,
-              height: 320,
-              left: "15%",
-              top: "28%",
-              borderRadius: "42% 58% 62% 38% / 40% 52% 48% 60%",
-              filter: "blur(50px)",
-              opacity: 0.85,
+              width: 400,
+              height: 350,
+              right: "-10%",
+              top: "15%",
+              borderRadius: "45% 55% 60% 40% / 50% 40% 60% 50%",
+              filter: "blur(70px)",
+              opacity: 0.45,
               pointerEvents: "none",
-              background:
-                "radial-gradient(ellipse at 40% 45%, #FF6B2C 0%, #FF8B4C 35%, #FFAD6E 60%, transparent 85%)",
-            }}
-          />
-          {/* Secondary blob — deeper red-orange, offset */}
-          <div
-            className="absolute"
-            style={{
-              width: 350,
-              height: 280,
-              left: "35%",
-              top: "22%",
-              borderRadius: "58% 42% 38% 62% / 55% 38% 62% 45%",
-              filter: "blur(45px)",
-              opacity: 0.7,
-              pointerEvents: "none",
-              background:
-                "radial-gradient(ellipse at 55% 50%, #E8461E 0%, #FF5E30 40%, transparent 75%)",
-            }}
-          />
-          {/* Tertiary — soft amber glow */}
-          <div
-            className="absolute"
-            style={{
-              width: 300,
-              height: 220,
-              left: "5%",
-              top: "40%",
-              borderRadius: "50% 50% 45% 55% / 50% 60% 40% 50%",
-              filter: "blur(60px)",
-              opacity: 0.5,
-              pointerEvents: "none",
-              background:
-                "radial-gradient(ellipse at center, #F2C94C 0%, #FFBA6B 50%, transparent 80%)",
+              background: "radial-gradient(ellipse at center, #FFD700 0%, #F2C94C 40%, transparent 75%)",
             }}
           />
           {/* Grain overlay */}

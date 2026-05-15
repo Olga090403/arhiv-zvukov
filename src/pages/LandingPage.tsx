@@ -147,25 +147,6 @@ export default function LandingPage() {
 
               {/* Line 2 */}
               <div className="flex items-center gap-3 md:gap-5 flex-wrap">
-                <h1
-                  className="font-heading font-black tracking-tight leading-[0.9] italic"
-                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
-                >
-                  забытый
-                </h1>
-                {/* Play button shape */}
-                <div className="hidden md:flex items-center gap-1">
-                  <div
-                    className="flex h-14 w-14 items-center justify-center rounded-full"
-                    style={{ background: "#0F0F12" }}
-                  >
-                    <Play className="h-6 w-6 ml-0.5 text-[#F2C94C]" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Line 3 */}
-              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
                 {/* Double semicircles */}
                 <div className="hidden md:flex items-center -space-x-1 text-brand-black/50">
                   <div className="h-10 w-5 rounded-l-full border-2 border-r-0 border-brand-black/30" />
@@ -208,39 +189,21 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* ── Subtitle + search ── */}
-            <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-              <div className="max-w-xs space-y-4">
-                <p className="text-sm leading-relaxed" style={{ color: "rgba(15,15,18,0.6)" }}>
-                  Кураторская библиотека исчезающих звуков.
-                  Ищи, исказь пресетом и&nbsp;собери диджей-микс за&nbsp;2&nbsp;минуты.
-                </p>
-                <Button
-                  variant="outline"
-                  className="rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5 gap-2"
-                  onClick={randomSound}
-                >
-                  <Shuffle className="h-3.5 w-3.5" />
-                  Случайный звук
-                </Button>
-              </div>
-
-              <form onSubmit={handleSearch} className="flex gap-2 max-w-sm w-full">
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Скрип снега, метро 80-х…"
-                  className="h-12 flex-1 text-base bg-white/40 backdrop-blur-sm border-brand-black/15 placeholder:text-brand-black/30 text-brand-black rounded-full px-5"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="h-12 px-6 gap-2 rounded-full bg-brand-black text-paper hover:bg-brand-black/90"
-                >
-                  Найти
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </form>
+            {/* ── Subtitle + button ── */}
+            <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <p className="text-base md:text-lg leading-relaxed max-w-full" style={{ color: "rgba(15,15,18,0.6)" }}>
+                Кураторская библиотека звуков.
+                Ищи и&nbsp;собери диджей-микс за&nbsp;2&nbsp;минуты
+              </p>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5 gap-2 shrink-0 h-12 px-8 text-base"
+                onClick={randomSound}
+              >
+                <Shuffle className="h-5 w-5" />
+                Случайный звук
+              </Button>
             </div>
           </div>
         </div>
@@ -254,10 +217,10 @@ export default function LandingPage() {
               { value: "CC0", label: "лицензия" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="font-heading text-xl font-bold md:text-2xl" style={{ color: "#0F0F12" }}>
+                <p className="font-heading text-3xl font-bold md:text-5xl" style={{ color: "#0F0F12" }}>
                   {stat.value}
                 </p>
-                <p className="text-xs" style={{ color: "rgba(15,15,18,0.45)" }}>{stat.label}</p>
+                <p className="text-sm md:text-base mt-1" style={{ color: "rgba(15,15,18,0.45)" }}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -442,7 +405,7 @@ export default function LandingPage() {
             Начни слушать прямо сейчас
           </h2>
           <p className="max-w-sm" style={{ color: "rgba(15,15,18,0.55)" }}>
-            Никакой регистрации. Открой, найди, смиксуй и скачай.
+            Открой, найди, смиксуй и скачай
           </p>
           <div className="flex gap-3">
             <Button
