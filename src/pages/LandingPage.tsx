@@ -405,22 +405,60 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="relative overflow-hidden px-4 md:px-8 py-16">
-        <div className="gradient-blob top-[-150px] left-[30%] opacity-30" />
+      <section className="relative overflow-hidden px-4 md:px-8 py-20 md:py-28">
+        {/* Warm gradient background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(145deg, #FDF6EE 0%, #FCEBD4 20%, #F8C86C 45%, #F2994A 65%, #E8643A 85%, #D94E3B 100%)",
+          }}
+        />
+        <div
+          className="absolute"
+          style={{
+            width: 500,
+            height: 400,
+            left: "50%",
+            top: "20%",
+            transform: "translateX(-50%)",
+            borderRadius: "45% 55% 60% 40% / 50% 40% 60% 50%",
+            filter: "blur(80px)",
+            opacity: 0.4,
+            pointerEvents: "none",
+            background: "radial-gradient(ellipse at center, #FFD700 0%, #F2C94C 40%, transparent 75%)",
+          }}
+        />
+        {/* Grain */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-25 mix-blend-multiply"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+            backgroundSize: "128px 128px",
+          }}
+        />
         <div className="relative z-10 mx-auto max-w-7xl flex flex-col items-center text-center gap-6">
-          <Headphones className="h-8 w-8 text-muted-foreground" />
-          <h2 className="font-heading text-3xl font-bold md:text-4xl max-w-md">
+          <Headphones className="h-8 w-8" style={{ color: "rgba(15,15,18,0.4)" }} />
+          <h2 className="font-heading text-3xl font-bold md:text-5xl max-w-lg" style={{ color: "#0F0F12" }}>
             Начни слушать прямо сейчас
           </h2>
-          <p className="text-muted-foreground max-w-sm">
+          <p className="max-w-sm" style={{ color: "rgba(15,15,18,0.55)" }}>
             Никакой регистрации. Открой, найди, смиксуй и скачай.
           </p>
           <div className="flex gap-3">
-            <Button size="lg" onClick={() => navigate("/search")} className="gap-2">
+            <Button
+              size="lg"
+              onClick={() => navigate("/search")}
+              className="gap-2 rounded-full bg-brand-black text-paper hover:bg-brand-black/90"
+            >
               <ArrowRight className="h-4 w-4" />
               Открыть архив
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/mixer")} className="gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/mixer")}
+              className="gap-2 rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5"
+            >
               Микшер
             </Button>
           </div>
