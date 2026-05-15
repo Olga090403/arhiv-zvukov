@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Upload, Music2, Search, Menu, Home, Library } from "lucide-react";
+import { Heart, Upload, Music2, Search, Menu, Home, Library, LogIn, LogOut } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 import FavoritesDrawer from "./FavoritesDrawer";
 
 export default function Header() {
@@ -14,6 +17,14 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { favorites } = useFavorites();
+  const { user } = useAuth();
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    toast.success("Вы вышли из аккаунта");
+    navigate("/");
+    setMenuOpen(false);
+  }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +82,25 @@ export default function Header() {
               />
             </div>
           </form>
+
+          {/* Auth button — desktop */}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden md:inline">Выйти</span>
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span className="hidden md:inline">Войти</span>
+            </Link>
+          )}
 
           {/* Favorites */}
           <button
@@ -143,6 +173,20 @@ export default function Header() {
               <Upload className="h-4 w-4" />
               Загрузить
             </NavLink>
+
+            <Separator className="my-2" />
+
+            {user ? (
+              <button onClick={handleLogout} className={mobileLink({ isActive: false })}>
+                <LogOut className="h-4 w-4" />
+                Выйти
+              </button>
+            ) : (
+              <NavLink to="/login" className={mobileLink} onClick={() => setMenuOpen(false)}>
+                <LogIn className="h-4 w-4" />
+                Войти
+              </NavLink>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
