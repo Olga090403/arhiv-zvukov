@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Upload, CheckCircle2, FileAudio } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function UploadPage() {
@@ -26,7 +26,18 @@ export default function UploadPage() {
     setFileName(f?.name ?? null);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const [submitting, setSubmitting] = useState(false);
+
+  function getSessionId(): string {
+    let sid = localStorage.getItem("session_id");
+    if (!sid) {
+      sid = crypto.randomUUID();
+      localStorage.setItem("session_id", sid);
+    }
+    return sid;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.licenseAgreed) {
       toast.error("Подтверди лицензию CC0 / CC BY");
@@ -36,28 +47,51 @@ export default function UploadPage() {
       toast.error("Выбери аудиофайл");
       return;
     }
-    // MVP: mock submission — real INSERT in Layer 2
+
+    setSubmitting(true);
+
+    const tags = form.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const { error } = await supabase.from("uploads").insert({
+      session_id: getSessionId(),
+      title: form.title,
+      file_url: `pending://${fileName}`,
+      tags: tags.length > 0 ? tags : null,
+      location: form.location || null,
+      license_agreed: true,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+      toast.error("Ошибка отправки. Попробуй ещё раз.");
+      return;
+    }
+
     setSubmitted(true);
-    toast.success("Спасибо! Звук отправлен на модерацию.");
+    toast.success("Звук отправлен на модерацию");
   }
 
   if (submitted) {
     return (
-      <div className="mx-auto max-w-md flex flex-col items-center gap-6 py-20 text-center">
+      <div className="relative mx-auto max-w-md flex flex-col items-center gap-8 py-20 text-center">
+        <div className="gradient-blob top-[-150px] right-[-100px] opacity-20" />
         <CheckCircle2
-          className="h-16 w-16"
+          className="relative z-10 h-16 w-16"
           style={{ color: "var(--color-brand-amber)" }}
         />
-        <div className="space-y-2">
-          <h2 className="font-heading text-2xl font-bold">
-            Звук отправлен!
-          </h2>
+        <div className="relative z-10 space-y-2">
+          <h2 className="font-heading text-3xl font-bold">Отправлено!</h2>
           <p className="text-muted-foreground">
-            Мы проверим его и опубликуем в течение 24–48 часов.
-            Спасибо, что помогаешь пополнять архив.
+            Мы проверим звук и опубликуем в течение 24–48 часов.
+            Спасибо, что пополняешь архив.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="relative z-10 flex gap-3">
           <Button onClick={() => navigate("/")}>На главную</Button>
           <Button variant="outline" onClick={() => setSubmitted(false)}>
             Загрузить ещё
@@ -68,34 +102,37 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-bold">Загрузить звук</h1>
+    <div className="mx-auto max-w-xl space-y-8">
+      {/* Header */}
+      <div className="space-y-2">
+        <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
+          Загрузка
+        </span>
+        <h1 className="font-heading text-3xl font-bold md:text-4xl">Загрузить звук</h1>
         <p className="text-muted-foreground text-sm">
-          Поделись редкой находкой. Все загрузки проходят ручную модерацию
-          перед публикацией.
+          Поделись редкой находкой. Все загрузки проходят ручную модерацию.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* File */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* File drop */}
         <div className="space-y-2">
           <Label>Аудиофайл *</Label>
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border p-8 transition-colors hover:border-primary hover:bg-secondary">
+          <label className="flex cursor-pointer flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-border p-10 transition-all hover:border-primary hover:bg-secondary/50">
             <FileAudio
-              className="h-8 w-8 text-muted-foreground"
-              style={fileName ? { color: "var(--color-brand-amber)" } : {}}
+              className="h-10 w-10"
+              style={fileName ? { color: "var(--color-brand-amber)" } : { color: "var(--muted-foreground)" }}
             />
-            <div className="text-center">
-              {fileName ? (
-                <p className="text-sm font-medium">{fileName}</p>
-              ) : (
-                <>
-                  <p className="text-sm font-medium">Перетащи файл или кликни</p>
-                  <p className="text-xs text-muted-foreground">MP3, WAV, FLAC, OGG — до 50 МБ</p>
-                </>
-              )}
-            </div>
+            {fileName ? (
+              <p className="text-sm font-medium">{fileName}</p>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm font-medium">Перетащи файл или кликни</p>
+                <p className="text-xs text-muted-foreground font-mono mt-1">
+                  MP3, WAV, FLAC, OGG — до 50 МБ
+                </p>
+              </div>
+            )}
             <input
               type="file"
               accept="audio/*"
@@ -123,7 +160,7 @@ export default function UploadPage() {
           <Label htmlFor="desc">Описание</Label>
           <Textarea
             id="desc"
-            placeholder="Контекст записи: где, когда, при каких условиях…"
+            placeholder="Где, когда, при каких условиях записано…"
             rows={3}
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -157,30 +194,25 @@ export default function UploadPage() {
         <Separator />
 
         {/* License */}
-        <Card>
-          <CardContent className="p-4">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                className="mt-0.5 h-4 w-4 accent-[#F2C94C]"
-                checked={form.licenseAgreed}
-                onChange={(e) => setForm((f) => ({ ...f, licenseAgreed: e.target.checked }))}
-              />
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Подтверждение лицензии *</p>
-                <p className="text-xs text-muted-foreground">
-                  Подтверждаю, что звук записан мной или является CC0 / CC&nbsp;BY,
-                  и я передаю его сообществу «Архив звуков» на этих условиях.
-                  Нарушение авторских прав ведёт к удалению записи.
-                </p>
-              </div>
-            </label>
-          </CardContent>
-        </Card>
+        <label className="flex items-start gap-3 rounded-xl border border-border p-5 cursor-pointer hover:bg-secondary/50 transition-colors">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 accent-[#F2C94C]"
+            checked={form.licenseAgreed}
+            onChange={(e) => setForm((f) => ({ ...f, licenseAgreed: e.target.checked }))}
+          />
+          <div className="space-y-1">
+            <p className="text-sm font-medium">Подтверждение лицензии *</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Подтверждаю, что звук записан мной или является CC0 / CC&nbsp;BY,
+              и я передаю его сообществу на этих условиях.
+            </p>
+          </div>
+        </label>
 
-        <Button type="submit" size="lg" className="w-full gap-2">
+        <Button type="submit" size="lg" className="w-full gap-2 h-12" disabled={submitting}>
           <Upload className="h-5 w-5" />
-          Отправить на модерацию
+          {submitting ? "Отправляю…" : "Отправить на модерацию"}
         </Button>
       </form>
     </div>

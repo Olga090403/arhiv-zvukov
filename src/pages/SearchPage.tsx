@@ -1,13 +1,15 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Play, Plus, Search, SearchX } from "lucide-react";
-import { MOCK_SOUNDS, CATEGORIES, formatDuration, searchSounds } from "@/lib/mockData";
+import { Play, Plus, Search, SearchX, ArrowRight } from "lucide-react";
+import { CATEGORIES, formatDuration } from "@/lib/mockData";
+import { supabase } from "@/lib/supabase";
+import type { DbSound } from "@/lib/database.types";
 import SoundCardSkeleton from "@/components/SoundCardSkeleton";
+import { toast } from "sonner";
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
@@ -16,24 +18,47 @@ export default function SearchPage() {
   const initialQ = params.get("q") ?? "";
   const [query, setQuery] = useState(initialQ);
   const [activeCategory, setActiveCategory] = useState("Все");
+  const [sounds, setSounds] = useState<DbSound[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setQuery(initialQ);
+    fetchSounds(initialQ, activeCategory);
+  }, [initialQ, activeCategory]);
+
+  async function fetchSounds(q: string, category: string) {
     setLoading(true);
-    const t = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(t);
-  }, [initialQ]);
+    setError(null);
 
-  const results = useMemo(
-    () => searchSounds(initialQ, activeCategory),
-    [initialQ, activeCategory]
-  );
+    let query = supabase
+      .from("sounds")
+      .select("*")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
 
-  const similar = useMemo(
-    () => (results.length === 0 ? MOCK_SOUNDS.slice(0, 3) : []),
-    [results]
-  );
+    if (q) {
+      query = query.or(`title.ilike.%${q}%,tags.cs.{${q}}`);
+    }
+
+    const { data, error: err } = await query;
+
+    if (err) {
+      console.error("Supabase error:", err);
+      setError("Не удалось загрузить звуки");
+      toast.error("Ошибка загрузки");
+    } else {
+      let filtered = data ?? [];
+      if (category && category !== "Все") {
+        filtered = filtered.filter((s) => s.tags.some(
+          (t) => t.toLowerCase() === category.toLowerCase()
+            || mapCategory(s.tags) === category
+        ));
+      }
+      setSounds(filtered);
+    }
+    setLoading(false);
+  }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -41,82 +66,158 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Search bar */}
-      <form onSubmit={handleSearch} className="flex gap-2 max-w-xl">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Поиск по названию и тегам…"
-          className="flex-1"
-        />
-        <Button type="submit" size="icon">
-          <Search className="h-4 w-4" />
-        </Button>
-      </form>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
+            Каталог
+          </span>
+          <h1 className="font-heading text-3xl font-bold md:text-4xl">
+            {initialQ ? `«${initialQ}»` : "Все звуки"}
+          </h1>
+        </div>
 
-      {/* Category filters */}
-      <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => (
-          <Badge
-            key={cat}
-            variant={activeCategory === cat ? "default" : "outline"}
-            className="cursor-pointer select-none px-3 py-1 text-sm"
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </Badge>
-        ))}
+        <form onSubmit={handleSearch} className="flex gap-2 max-w-sm w-full sm:w-auto">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Найти звук…"
+              className="pl-9 h-10"
+            />
+          </div>
+          <Button type="submit" className="h-10 px-4">Найти</Button>
+        </form>
       </div>
 
-      {/* Heading */}
-      <div className="space-y-0.5">
-        <h2 className="font-heading text-2xl font-semibold">
-          {initialQ ? `«${initialQ}»` : "Все звуки"}
-        </h2>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
+                activeCategory === cat
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
         {!loading && (
-          <p className="text-sm text-muted-foreground">
-            {results.length > 0
-              ? `${results.length} звук${results.length === 1 ? "" : results.length < 5 ? "а" : "ов"}`
-              : "Ничего не найдено"}
-          </p>
+          <span className="font-mono text-xs text-muted-foreground shrink-0">
+            {sounds.length} результат{sounds.length === 1 ? "" : sounds.length < 5 ? "а" : "ов"}
+          </span>
         )}
       </div>
 
-      {/* Loading skeletons */}
+      <Separator />
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
+          <p className="text-sm text-destructive">{error}</p>
+          <Button variant="outline" size="sm" className="mt-3" onClick={() => fetchSounds(initialQ, activeCategory)}>
+            Повторить
+          </Button>
+        </div>
+      )}
+
+      {/* Loading */}
       {loading && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
             <SoundCardSkeleton key={i} />
           ))}
         </div>
       )}
 
-      {/* Results grid */}
-      {!loading && results.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((sound) => (
-            <SoundCard
+      {/* Results */}
+      {!loading && !error && sounds.length > 0 && (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {sounds.map((sound) => (
+            <article
               key={sound.id}
-              sound={sound}
-              onOpen={() => navigate(`/sound/${sound.id}`)}
-              onAddToMixer={() =>
-                navigate(`/mixer?add=${sound.id}&title=${encodeURIComponent(sound.title)}`)
-              }
-            />
+              className="group cursor-pointer space-y-3"
+              onClick={() => navigate(`/sound/${sound.id}`)}
+            >
+              <div className="relative overflow-hidden rounded-xl border border-border bg-card p-5 transition-all group-hover:border-primary group-hover:shadow-md group-hover:shadow-primary/5">
+                <div className="flex h-14 items-end gap-[2px]">
+                  {Array.from({ length: 36 }).map((_, i) => {
+                    const h = 20 + Math.sin(i * 0.6 + sound.id.charCodeAt(0) * 0.1) * 25
+                      + Math.cos(i * 0.25) * 12;
+                    return (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-full bg-foreground/10 group-hover:bg-primary/40 transition-colors"
+                        style={{ height: `${Math.max(8, h)}%` }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+                    <Play className="h-4 w-4 ml-0.5" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1 px-0.5">
+                <p className="font-medium text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                  {sound.title}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="font-mono">{formatDuration(sound.duration)}</span>
+                  <span>·</span>
+                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 font-mono">
+                    {sound.license}
+                  </Badge>
+                </div>
+                <div className="flex gap-1.5 pt-0.5">
+                  {sound.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="font-mono text-[10px] text-muted-foreground/60">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 px-0.5">
+                <Button
+                  size="sm" variant="ghost" className="flex-1 gap-1.5 text-xs h-8"
+                  onClick={(e) => { e.stopPropagation(); navigate(`/sound/${sound.id}`); }}
+                >
+                  <Play className="h-3 w-3" />
+                  Слушать
+                </Button>
+                <Button
+                  size="sm" variant="outline" className="gap-1.5 text-xs h-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/mixer?add=${sound.id}&title=${encodeURIComponent(sound.title)}`);
+                  }}
+                >
+                  <Plus className="h-3 w-3" />
+                  В микс
+                </Button>
+              </div>
+            </article>
           ))}
         </div>
       )}
 
-      {/* Empty state */}
-      {!loading && results.length === 0 && (
-        <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <SearchX className="h-12 w-12 text-muted-foreground/40" />
-          <div className="space-y-1">
-            <p className="font-heading text-lg font-semibold">Ничего не найдено</p>
+      {/* Empty */}
+      {!loading && !error && sounds.length === 0 && (
+        <div className="flex flex-col items-center gap-5 py-20 text-center">
+          <SearchX className="h-12 w-12 text-muted-foreground/30" />
+          <div className="space-y-2">
+            <p className="font-heading text-xl font-bold">Ничего не найдено</p>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Попробуй другой запрос или выбери категорию.
-              Архив пополняется — скоро здесь будет больше звуков.
+              Попробуй другой запрос или сбрось фильтры.
             </p>
           </div>
           <Button variant="outline" onClick={() => { setParams({}); setActiveCategory("Все"); }}>
@@ -124,100 +225,16 @@ export default function SearchPage() {
           </Button>
         </div>
       )}
-
-      {/* Similar block when no results */}
-      {!loading && similar.length > 0 && (
-        <>
-          <Separator />
-          <div className="space-y-4">
-            <h3 className="font-heading text-lg font-semibold">
-              Похожие звуки
-            </h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {similar.map((sound) => (
-                <SoundCard
-                  key={sound.id}
-                  sound={sound}
-                  onOpen={() => navigate(`/sound/${sound.id}`)}
-                  onAddToMixer={() =>
-                    navigate(`/mixer?add=${sound.id}&title=${encodeURIComponent(sound.title)}`)
-                  }
-                />
-              ))}
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }
 
-interface SoundCardProps {
-  sound: ReturnType<typeof searchSounds>[0];
-  onOpen: () => void;
-  onAddToMixer: () => void;
-}
-
-function SoundCard({ sound, onOpen, onAddToMixer }: SoundCardProps) {
-  return (
-    <Card
-      className="group cursor-pointer transition-colors hover:border-primary"
-      onClick={onOpen}
-    >
-      <CardContent className="p-4 space-y-3">
-        <div className="flex h-10 items-center gap-0.5">
-          {Array.from({ length: 32 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-full bg-muted group-hover:bg-primary/30 transition-colors"
-              style={{ height: `${25 + Math.sin(i * 0.9 + Number(sound.id)) * 18}%` }}
-            />
-          ))}
-        </div>
-
-        <div className="space-y-1">
-          <p className="font-medium text-sm leading-snug line-clamp-2">
-            {sound.title}
-          </p>
-          <div className="flex flex-wrap gap-1 pt-0.5">
-            {sound.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="font-mono text-[10px] text-muted-foreground">
-                #{tag}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="font-mono">{formatDuration(sound.duration)}</span>
-            <span>·</span>
-            <Badge variant="secondary" className="text-[10px] py-0 px-1.5">
-              {sound.license}
-            </Badge>
-            <span>·</span>
-            <span>{sound.listenCount} прослушиваний</span>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="flex-1 gap-1.5 group-hover:bg-primary group-hover:text-primary-foreground text-xs"
-            onClick={(e) => { e.stopPropagation(); onOpen(); }}
-          >
-            <Play className="h-3 w-3" />
-            Открыть
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-1.5 text-xs"
-            onClick={(e) => { e.stopPropagation(); onAddToMixer(); }}
-          >
-            <Plus className="h-3 w-3" />
-            В микс
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+function mapCategory(tags: string[]): string {
+  const lower = tags.map((t) => t.toLowerCase());
+  if (lower.some((t) => ["снег", "дождь", "ветер", "вода", "капель", "природа"].includes(t))) return "Природа";
+  if (lower.some((t) => ["метро", "трамвай", "город", "улица", "транспорт"].includes(t))) return "Город";
+  if (lower.some((t) => ["лампа", "машинка", "электричество", "техника"].includes(t))) return "Техника";
+  if (lower.some((t) => ["советский", "ретро", "ностальгия", "старый"].includes(t))) return "Ностальгия";
+  if (lower.some((t) => ["кофе", "утро", "атмосфера", "ночь", "интерьер"].includes(t))) return "Атмосфера";
+  return "Все";
 }
