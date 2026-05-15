@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { UserPlus } from "lucide-react";
+import AuthLayout from "@/components/layout/AuthLayout";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -51,17 +50,15 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-8 pt-8">
-      <div className="text-center space-y-2">
-        <h1 className="font-heading text-3xl font-bold">Регистрация</h1>
-        <p className="text-sm text-muted-foreground">
-          Создай аккаунт для облачной синхронизации
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+    <AuthLayout
+      heading="Создать аккаунт"
+      subheading="Получи доступ к облачной синхронизации избранного и миксов — слушай на любом устройстве."
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
@@ -70,11 +67,14 @@ export default function SignupPage() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             required
+            className="h-11"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Пароль</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">
+            Пароль
+          </Label>
           <Input
             id="password"
             type="password"
@@ -83,11 +83,14 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
             required
+            className="h-11"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirm">Подтверди пароль</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="confirm" className="text-xs font-medium text-muted-foreground">
+            Подтверди пароль
+          </Label>
           <Input
             id="confirm"
             type="password"
@@ -96,27 +99,30 @@ export default function SignupPage() {
             onChange={(e) => setConfirm(e.target.value)}
             autoComplete="new-password"
             required
+            className="h-11"
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
-          <UserPlus className="h-4 w-4" />
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full text-sm font-semibold tracking-wide"
+          disabled={loading}
+        >
           {loading ? "Создаю…" : "Создать аккаунт"}
         </Button>
       </form>
 
-      <Separator />
-
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         Уже есть аккаунт?{" "}
         <Link to="/login" className="font-medium text-foreground hover:underline">
           Войти
         </Link>
       </p>
 
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="mt-4 text-center text-[11px] text-muted-foreground/70">
         Регистрация необязательна — весь архив доступен без аккаунта.
       </p>
-    </div>
+    </AuthLayout>
   );
 }

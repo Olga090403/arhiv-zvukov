@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { LogIn } from "lucide-react";
+import AuthLayout from "@/components/layout/AuthLayout";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -45,17 +44,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-8 pt-8">
-      <div className="text-center space-y-2">
-        <h1 className="font-heading text-3xl font-bold">Вход</h1>
-        <p className="text-sm text-muted-foreground">
-          Войди, чтобы синхронизировать избранное и миксы
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+    <AuthLayout
+      heading="С возвращением"
+      subheading="Войди, чтобы синхронизировать избранное, миксы и загрузки между устройствами."
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
@@ -64,11 +61,14 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             required
+            className="h-11"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Пароль</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">
+            Пароль
+          </Label>
           <Input
             id="password"
             type="password"
@@ -77,27 +77,30 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             required
+            className="h-11"
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
-          <LogIn className="h-4 w-4" />
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full text-sm font-semibold tracking-wide"
+          disabled={loading}
+        >
           {loading ? "Вхожу…" : "Войти"}
         </Button>
       </form>
 
-      <Separator />
-
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         Нет аккаунта?{" "}
         <Link to="/signup" className="font-medium text-foreground hover:underline">
           Зарегистрируйся
         </Link>
       </p>
 
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="mt-4 text-center text-[11px] text-muted-foreground/70">
         Вход необязателен — весь архив доступен без регистрации.
       </p>
-    </div>
+    </AuthLayout>
   );
 }
