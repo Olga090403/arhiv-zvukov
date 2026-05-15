@@ -11,26 +11,70 @@ export default function AuthLayout({ children, heading, subheading }: AuthLayout
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-8">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl border border-border shadow-xl md:grid-cols-2">
 
-        {/* ── Left: gradient hero ── */}
-        <div className="relative hidden flex-col justify-between overflow-hidden bg-brand-black p-10 md:flex min-h-[540px]">
-          {/* Gradient blob */}
+        {/* ── Left: warm gradient panel ── */}
+        <div className="relative hidden flex-col justify-between overflow-hidden p-10 md:flex min-h-[540px]"
+          style={{ background: "#FDF6EE" }}
+        >
+          {/* Primary blob — warm orange, organic shape */}
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/3"
+            className="absolute"
             style={{
-              width: 500,
-              height: 400,
-              borderRadius: "50%",
-              filter: "blur(90px)",
-              opacity: 0.6,
+              width: 420,
+              height: 320,
+              left: "15%",
+              top: "28%",
+              borderRadius: "42% 58% 62% 38% / 40% 52% 48% 60%",
+              filter: "blur(50px)",
+              opacity: 0.85,
               pointerEvents: "none",
               background:
-                "radial-gradient(ellipse at center, #F2C94C 0%, #F28C4C 30%, #FF6B6B 55%, transparent 80%)",
+                "radial-gradient(ellipse at 40% 45%, #FF6B2C 0%, #FF8B4C 35%, #FFAD6E 60%, transparent 85%)",
+            }}
+          />
+          {/* Secondary blob — deeper red-orange, offset */}
+          <div
+            className="absolute"
+            style={{
+              width: 350,
+              height: 280,
+              left: "35%",
+              top: "22%",
+              borderRadius: "58% 42% 38% 62% / 55% 38% 62% 45%",
+              filter: "blur(45px)",
+              opacity: 0.7,
+              pointerEvents: "none",
+              background:
+                "radial-gradient(ellipse at 55% 50%, #E8461E 0%, #FF5E30 40%, transparent 75%)",
+            }}
+          />
+          {/* Tertiary — soft amber glow */}
+          <div
+            className="absolute"
+            style={{
+              width: 300,
+              height: 220,
+              left: "5%",
+              top: "40%",
+              borderRadius: "50% 50% 45% 55% / 50% 60% 40% 50%",
+              filter: "blur(60px)",
+              opacity: 0.5,
+              pointerEvents: "none",
+              background:
+                "radial-gradient(ellipse at center, #F2C94C 0%, #FFBA6B 50%, transparent 80%)",
+            }}
+          />
+          {/* Grain overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-30 mix-blend-multiply"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+              backgroundSize: "128px 128px",
             }}
           />
 
           {/* Brand */}
-          <Link to="/" className="relative z-10 flex items-center gap-2 text-paper/80 hover:text-paper transition-colors">
-            <span style={{ color: "#F2C94C", fontSize: 18 }}>▶</span>
+          <Link to="/" className="relative z-10 flex items-center gap-2 text-brand-black/60 hover:text-brand-black transition-colors">
+            <span style={{ color: "#E8461E", fontSize: 18 }}>▶</span>
             <span className="font-heading text-sm font-semibold tracking-tight">
               Архив звуков
             </span>
@@ -38,10 +82,10 @@ export default function AuthLayout({ children, heading, subheading }: AuthLayout
 
           {/* Hero text */}
           <div className="relative z-10 space-y-3">
-            <p className="text-paper/50 text-xs font-mono uppercase tracking-[0.2em]">
+            <p className="text-brand-black/40 text-xs font-mono uppercase tracking-[0.2em]">
               Ты можешь
             </p>
-            <h2 className="font-heading text-2xl font-bold leading-tight text-paper lg:text-3xl">
+            <h2 className="font-heading text-2xl font-bold leading-tight text-brand-black/80 lg:text-3xl">
               Открыть личный
               <br />
               архив забытых
