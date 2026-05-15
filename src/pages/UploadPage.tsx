@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Upload, CheckCircle2, FileAudio, Pencil, Trash2, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 import type { DbUpload } from "@/lib/database.types";
 import { toast } from "sonner";
 
@@ -45,6 +46,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondar
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -72,11 +74,19 @@ export default function UploadPage() {
 
   const fetchMyUploads = useCallback(async () => {
     setLoadingUploads(true);
-    const { data, error } = await supabase
+
+    let query = supabase
       .from("uploads")
       .select("*")
-      .eq("session_id", getSessionId())
       .order("created_at", { ascending: false });
+
+    if (user) {
+      query = query.or(`user_id.eq.${user.id},session_id.eq.${getSessionId()}`);
+    } else {
+      query = query.eq("session_id", getSessionId());
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Fetch uploads error:", error);
@@ -84,7 +94,7 @@ export default function UploadPage() {
       setUploads(data ?? []);
     }
     setLoadingUploads(false);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchMyUploads();
@@ -119,6 +129,7 @@ export default function UploadPage() {
 
     const { error } = await supabase.from("uploads").insert({
       session_id: getSessionId(),
+      user_id: user?.id ?? null,
       title: form.title.trim(),
       file_url: `pending://${fileName}`,
       tags: tags.length > 0 ? tags : null,
@@ -163,15 +174,18 @@ export default function UploadPage() {
       .map((t) => t.trim())
       .filter(Boolean);
 
-    const { error } = await supabase
+    const q = supabase
       .from("uploads")
       .update({
         title: editForm.title.trim(),
         tags: tags.length > 0 ? tags : null,
         location: editForm.location.trim() || null,
       })
-      .eq("id", editUpload.id)
-      .eq("session_id", getSessionId());
+      .eq("id", editUpload.id);
+
+    const { error } = await (user
+      ? q.eq("user_id", user.id)
+      : q.eq("session_id", getSessionId()));
 
     setSaving(false);
 
@@ -191,11 +205,14 @@ export default function UploadPage() {
     if (!deleteUpload) return;
     setDeleting(true);
 
-    const { error } = await supabase
+    const q = supabase
       .from("uploads")
       .delete()
-      .eq("id", deleteUpload.id)
-      .eq("session_id", getSessionId());
+      .eq("id", deleteUpload.id);
+
+    const { error } = await (user
+      ? q.eq("user_id", user.id)
+      : q.eq("session_id", getSessionId()));
 
     setDeleting(false);
 
@@ -370,7 +387,9 @@ export default function UploadPage() {
         <div className="space-y-1">
           <h2 className="font-heading text-xl font-semibold">Мои загрузки</h2>
           <p className="text-sm text-muted-foreground">
-            Загрузки привязаны к этому браузеру через session_id.
+            {user
+              ? "Загрузки привязаны к твоему аккаунту."
+              : "Загрузки привязаны к этому браузеру. Войди, чтобы управлять ими."}
           </p>
         </div>
 
@@ -421,8 +440,8 @@ export default function UploadPage() {
                     )}
                   </div>
 
-                  {/* Edit + Delete only for pending */}
-                  {u.status === "pending" && (
+                  {/* Edit + Delete: pending + owner (RLS requires auth.uid() = user_id) */}
+                  {u.status === "pending" && user && u.user_id === user.id && (
                     <div className="flex gap-1 shrink-0">
                       <Button
                         variant="ghost"

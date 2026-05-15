@@ -16,6 +16,7 @@ export interface DbSound {
 export interface DbUpload {
   id: string;
   session_id: string;
+  user_id: string | null;
   title: string;
   file_url: string;
   tags: string[] | null;
