@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Play, ArrowRight, Shuffle, Headphones } from "lucide-react";
+import { Play, ArrowRight, Shuffle, Headphones, ArrowDownRight } from "lucide-react";
 import { formatDuration } from "@/lib/mockData";
 import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
@@ -66,73 +66,198 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col gap-0 -mt-8 -mx-4 md:-mx-8">
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-4 md:px-8 pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="gradient-blob top-[-100px] right-[-100px] md:right-[10%] md:top-[-50px]" />
-        <div className="gradient-blob-violet gradient-blob bottom-[-200px] left-[-150px]" />
+      {/* ── Hero — bold typographic ── */}
+      <section className="relative overflow-hidden min-h-[85vh] flex flex-col justify-between">
+        {/* Warm gradient background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(145deg, #FDF6EE 0%, #FCEBD4 20%, #F8C86C 45%, #F2994A 65%, #E8643A 85%, #D94E3B 100%)",
+          }}
+        />
+        {/* Secondary amber blob */}
+        <div
+          className="absolute"
+          style={{
+            width: 600,
+            height: 500,
+            right: "-5%",
+            top: "10%",
+            borderRadius: "45% 55% 60% 40% / 50% 40% 60% 50%",
+            filter: "blur(80px)",
+            opacity: 0.5,
+            pointerEvents: "none",
+            background: "radial-gradient(ellipse at center, #FFD700 0%, #F2C94C 40%, transparent 75%)",
+          }}
+        />
+        {/* Pink accent blob */}
+        <div
+          className="absolute"
+          style={{
+            width: 400,
+            height: 350,
+            left: "10%",
+            bottom: "5%",
+            borderRadius: "55% 45% 40% 60% / 45% 55% 45% 55%",
+            filter: "blur(70px)",
+            opacity: 0.3,
+            pointerEvents: "none",
+            background: "radial-gradient(ellipse at center, #FF9A76 0%, #FFB88C 50%, transparent 80%)",
+          }}
+        />
+        {/* Grain texture */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-25 mix-blend-multiply"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+            backgroundSize: "128px 128px",
+          }}
+        />
 
-        <div className="relative z-10 mx-auto max-w-7xl">
-          <div className="max-w-3xl space-y-8">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-brand-amber" />
-              <span className="font-mono text-xs tracking-[0.2em] uppercase text-muted-foreground">
-                Кураторская библиотека
-              </span>
+        {/* Content */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-4 md:px-8 py-16">
+          <div className="mx-auto max-w-7xl w-full">
+
+            {/* ── Title block with geometric shapes ── */}
+            <div className="space-y-4 md:space-y-2">
+              {/* Line 1 */}
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                {/* Circle + arrow icon */}
+                <div className="hidden md:flex items-center gap-2 text-brand-black/70">
+                  <div className="h-6 w-6 rounded-full border-2 border-brand-black/50" />
+                  <ArrowRight className="h-6 w-6" />
+                </div>
+                <h1
+                  className="font-heading font-black tracking-tight leading-[0.9]"
+                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
+                >
+                  найди
+                </h1>
+                {/* Arrow icon */}
+                <ArrowDownRight
+                  className="hidden md:block text-brand-black/60"
+                  style={{ width: "clamp(2rem, 4vw, 3.5rem)", height: "clamp(2rem, 4vw, 3.5rem)" }}
+                />
+                {/* Decorative circles */}
+                <div className="hidden lg:flex items-center gap-2">
+                  <div className="h-10 w-10 rounded-full" style={{ background: "#0F0F12", opacity: 0.15 }} />
+                  <div className="h-7 w-7 rounded-full" style={{ background: "#FDF6EE", opacity: 0.7 }} />
+                </div>
+              </div>
+
+              {/* Line 2 */}
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                <h1
+                  className="font-heading font-black tracking-tight leading-[0.9] italic"
+                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
+                >
+                  забытый
+                </h1>
+                {/* Play button shape */}
+                <div className="hidden md:flex items-center gap-1">
+                  <div
+                    className="flex h-14 w-14 items-center justify-center rounded-full"
+                    style={{ background: "#0F0F12" }}
+                  >
+                    <Play className="h-6 w-6 ml-0.5 text-[#F2C94C]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Line 3 */}
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                {/* Double semicircles */}
+                <div className="hidden md:flex items-center -space-x-1 text-brand-black/50">
+                  <div className="h-10 w-5 rounded-l-full border-2 border-r-0 border-brand-black/30" />
+                  <div className="h-10 w-5 rounded-l-full border-2 border-r-0 border-brand-black/30" />
+                </div>
+                <h1
+                  className="font-heading font-black tracking-tight leading-[0.9]"
+                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
+                >
+                  звук
+                </h1>
+                <span
+                  className="font-heading font-black"
+                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12", opacity: 0.2 }}
+                >
+                  .
+                </span>
+                {/* Triangles */}
+                <div className="hidden lg:flex items-center gap-1">
+                  <div
+                    style={{
+                      width: 0,
+                      height: 0,
+                      borderLeft: "18px solid transparent",
+                      borderRight: "18px solid transparent",
+                      borderBottom: "30px solid rgba(15,15,18,0.15)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: 0,
+                      height: 0,
+                      borderLeft: "14px solid transparent",
+                      borderRight: "14px solid transparent",
+                      borderBottom: "24px solid rgba(15,15,18,0.1)",
+                      transform: "rotate(30deg)",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <h1 className="font-heading text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-8xl">
-              Звуки,{" "}
-              <span className="italic" style={{ color: "var(--color-brand-amber)" }}>
-                которые
-              </span>
-              <br />
-              исчезают
-            </h1>
+            {/* ── Subtitle + search ── */}
+            <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+              <div className="max-w-xs space-y-4">
+                <p className="text-sm leading-relaxed" style={{ color: "rgba(15,15,18,0.6)" }}>
+                  Кураторская библиотека исчезающих звуков.
+                  Ищи, исказь пресетом и&nbsp;собери диджей-микс за&nbsp;2&nbsp;минуты.
+                </p>
+                <Button
+                  variant="outline"
+                  className="rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5 gap-2"
+                  onClick={randomSound}
+                >
+                  <Shuffle className="h-3.5 w-3.5" />
+                  Случайный звук
+                </Button>
+              </div>
 
-            <p className="text-lg text-muted-foreground max-w-lg md:text-xl">
-              Найди редкий звук, исказь пресетом и&nbsp;собери
-              диджей-микс за&nbsp;2&nbsp;минуты. Бесплатно. Без регистрации.
-            </p>
-
-            <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Скрип снега, метро 80-х…"
-                className="h-12 flex-1 text-base bg-background/60 backdrop-blur-sm border-border"
-              />
-              <Button type="submit" size="lg" className="h-12 px-6 gap-2">
-                Найти
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </form>
-
-            <div className="flex gap-3">
-              <Button variant="outline" size="sm" onClick={randomSound} className="gap-2">
-                <Shuffle className="h-3.5 w-3.5" />
-                Случайный звук
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/search")}
-                className="gap-2 text-muted-foreground"
-              >
-                Весь архив
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+              <form onSubmit={handleSearch} className="flex gap-2 max-w-sm w-full">
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Скрип снега, метро 80-х…"
+                  className="h-12 flex-1 text-base bg-white/40 backdrop-blur-sm border-brand-black/15 placeholder:text-brand-black/30 text-brand-black rounded-full px-5"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="h-12 px-6 gap-2 rounded-full bg-brand-black text-paper hover:bg-brand-black/90"
+                >
+                  Найти
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </form>
             </div>
           </div>
+        </div>
 
-          <div className="mt-16 flex gap-12 md:gap-16">
+        {/* ── Stats bar ── */}
+        <div className="relative z-10 border-t border-brand-black/10 px-4 md:px-8 py-5">
+          <div className="mx-auto max-w-7xl flex gap-12 md:gap-20">
             {[
               { value: `${sounds.length || "…"}`, label: "звуков" },
               { value: "3", label: "пресета" },
               { value: "CC0", label: "лицензия" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="font-heading text-2xl font-bold md:text-3xl">{stat.value}</p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="font-heading text-xl font-bold md:text-2xl" style={{ color: "#0F0F12" }}>
+                  {stat.value}
+                </p>
+                <p className="text-xs" style={{ color: "rgba(15,15,18,0.45)" }}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -177,14 +302,12 @@ export default function LandingPage() {
             </Button>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
               <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
-          {/* Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             {loading
               ? Array.from({ length: 3 }).map((_, i) => <SoundCardSkeleton key={i} />)
@@ -242,7 +365,6 @@ export default function LandingPage() {
                 ))}
           </div>
 
-          {/* Empty state */}
           {!loading && !error && sounds.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
