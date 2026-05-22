@@ -47,6 +47,13 @@
         {
           "locationWhenInUsePermission": "Для указания места записи звука"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#F2C94C"
+        }
       ]
     ]
   }

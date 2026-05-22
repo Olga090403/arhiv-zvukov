@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -7,6 +7,7 @@ import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-goog
 import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
 import { colors } from "../src/theme";
 import { useAuth } from "../src/lib/useAuth";
+import { registerForPushNotificationsAsync } from "../src/lib/pushNotifications";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -21,6 +22,7 @@ export default function RootLayout() {
   const { session, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const pushRegistered = useRef(false);
 
   useEffect(() => {
     if (!fontsLoaded || loading) return;
@@ -33,6 +35,16 @@ export default function RootLayout() {
       router.replace("/");
     }
   }, [session, loading, fontsLoaded, segments]);
+
+  useEffect(() => {
+    if (session?.user && !pushRegistered.current) {
+      pushRegistered.current = true;
+      registerForPushNotificationsAsync(session.user.id);
+    }
+    if (!session) {
+      pushRegistered.current = false;
+    }
+  }, [session]);
 
   if (!fontsLoaded || loading) {
     return (

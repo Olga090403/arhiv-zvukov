@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { colors, fonts, spacing, radius } from "../../src/theme";
 import { useAuth } from "../../src/lib/useAuth";
 import { supabase } from "../../src/lib/supabase";
@@ -18,6 +19,18 @@ export default function ProfileScreen() {
     ]);
   }
 
+  async function handleTestNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Архив звуков",
+        body: "Твой звук прошёл модерацию и опубликован!",
+        sound: true,
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 3 },
+    });
+    Alert.alert("Готово", "Уведомление придёт через 3 секунды");
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.avatarSection}>
@@ -32,6 +45,14 @@ export default function ProfileScreen() {
         <Pressable style={styles.menuItem} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={22} color={colors.destructive} />
           <Text style={[styles.menuText, { color: colors.destructive }]}>Выйти</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.text.muted} />
+        </Pressable>
+
+        <View style={styles.separator} />
+
+        <Pressable style={styles.menuItem} onPress={handleTestNotification}>
+          <Ionicons name="notifications-outline" size={22} color={colors.brand.amber} />
+          <Text style={styles.menuText}>Тестовое уведомление</Text>
           <Ionicons name="chevron-forward" size={18} color={colors.text.muted} />
         </Pressable>
 
