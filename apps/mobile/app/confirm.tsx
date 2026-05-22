@@ -6,8 +6,7 @@ import * as Location from "expo-location";
 import * as FileSystem from "expo-file-system";
 import { colors, fonts, spacing, radius } from "../src/theme";
 import { supabase } from "../src/lib/supabase";
-import { useAuth } from "../src/lib/AuthProvider";
-import { getSessionId } from "../src/lib/session";
+import { useAuth } from "../src/lib/useAuth";
 
 export default function ConfirmScreen() {
   const router = useRouter();
@@ -95,20 +94,23 @@ export default function ConfirmScreen() {
       Alert.alert("Ошибка", "Подтверди лицензию");
       return;
     }
+    if (!user) {
+      Alert.alert("Ошибка", "Необходимо войти в аккаунт");
+      return;
+    }
 
     setSubmitting(true);
     try {
-      const sessionId = await getSessionId();
       const tagArray = tags
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const fileUrl = await uploadAudioFile(sessionId);
+      const fileUrl = await uploadAudioFile(user.id);
 
       const { error } = await supabase.from("uploads").insert({
-        session_id: sessionId,
-        user_id: user?.id ?? null,
+        session_id: user.id,
+        user_id: user.id,
         title: title.trim(),
         file_url: fileUrl ?? "pending://upload-failed",
         tags: tagArray.length > 0 ? tagArray : null,

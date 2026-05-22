@@ -4,8 +4,6 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../../src/theme";
 import { supabase } from "../../src/lib/supabase";
-import { useAuth } from "../../src/lib/AuthProvider";
-import { getSessionId } from "../../src/lib/session";
 import type { DbUpload } from "../../src/lib/database.types";
 
 const STATUS_CONFIG = {
@@ -37,7 +35,6 @@ function UploadItem({ item }: { item: DbUpload }) {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { user } = useAuth();
   const [uploads, setUploads] = useState<DbUpload[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,21 +43,12 @@ export default function HomeScreen() {
     setLoading(true);
     setError(null);
     try {
-      const sessionId = await getSessionId();
-
-      let query = supabase
+      const { data, error: dbError } = await supabase
         .from("uploads")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
 
-      if (user) {
-        query = query.eq("user_id", user.id);
-      } else {
-        query = query.eq("session_id", sessionId);
-      }
-
-      const { data, error: dbError } = await query;
       if (dbError) {
         setError(dbError.message);
         return;
@@ -71,7 +59,7 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     fetchUploads();

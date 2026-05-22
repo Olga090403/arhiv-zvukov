@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
-import { useRouter } from "expo-router";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../src/theme";
-import { useAuth } from "../src/lib/AuthProvider";
+import { supabase } from "../src/lib/supabase";
 
-export default function AuthScreen() {
-  const router = useRouter();
-  const { signIn, signUp } = useAuth();
+export default function LoginScreen() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,19 +31,28 @@ export default function AuthScreen() {
     }
 
     setLoading(true);
-    const error = mode === "login"
-      ? await signIn(email.trim(), password)
-      : await signUp(email.trim(), password);
-    setLoading(false);
-
-    if (error) {
-      Alert.alert("Ошибка", error);
-    } else if (mode === "signup") {
-      Alert.alert("Готово!", "Аккаунт создан. Проверь почту для подтверждения.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
-    } else {
-      router.back();
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (error) Alert.alert("Ошибка", error.message);
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+        });
+        if (error) {
+          Alert.alert("Ошибка", error.message);
+        } else {
+          Alert.alert("Готово!", "Аккаунт создан. Проверь почту для подтверждения.");
+        }
+      }
+    } catch {
+      Alert.alert("Ошибка", "Нет подключения к серверу");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -46,7 +62,6 @@ export default function AuthScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.content}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.iconWrap}>
             <Ionicons name="person-outline" size={32} color={colors.brand.amber} />
@@ -61,7 +76,6 @@ export default function AuthScreen() {
           </Text>
         </View>
 
-        {/* Form */}
         <View style={styles.form}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -100,16 +114,12 @@ export default function AuthScreen() {
           </Pressable>
         </View>
 
-        {/* Toggle mode */}
         <Pressable onPress={() => setMode(mode === "login" ? "signup" : "login")}>
           <Text style={styles.toggleText}>
-            {mode === "login" ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти"}
+            {mode === "login"
+              ? "Нет аккаунта? Зарегистрироваться"
+              : "Уже есть аккаунт? Войти"}
           </Text>
-        </Pressable>
-
-        {/* Skip */}
-        <Pressable style={styles.skipBtn} onPress={() => router.back()}>
-          <Text style={styles.skipText}>Продолжить без входа</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -190,14 +200,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.brand.amber,
     textAlign: "center",
-  },
-  skipBtn: {
-    alignItems: "center",
-    paddingVertical: spacing.sm,
-  },
-  skipText: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text.muted,
   },
 });

@@ -1,54 +1,37 @@
 import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { colors, fonts, spacing, radius } from "../../src/theme";
-import { useAuth } from "../../src/lib/AuthProvider";
+import { useAuth } from "../../src/lib/useAuth";
+import { supabase } from "../../src/lib/supabase";
 
 export default function ProfileScreen() {
-  const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
-  function handleAuth() {
-    if (user) {
-      Alert.alert("Выйти?", "Загрузки останутся привязаны к аккаунту", [
-        { text: "Отмена", style: "cancel" },
-        { text: "Выйти", style: "destructive", onPress: signOut },
-      ]);
-    } else {
-      router.push("/auth");
-    }
+  function handleLogout() {
+    Alert.alert("Выйти?", "Загрузки останутся привязаны к аккаунту", [
+      { text: "Отмена", style: "cancel" },
+      {
+        text: "Выйти",
+        style: "destructive",
+        onPress: () => supabase.auth.signOut(),
+      },
+    ]);
   }
 
   return (
     <View style={styles.container}>
-      {/* Avatar area */}
       <View style={styles.avatarSection}>
         <View style={styles.avatar}>
-          <Ionicons
-            name={user ? "person" : "person-outline"}
-            size={40}
-            color={user ? colors.bg.paper : colors.text.muted}
-          />
+          <Ionicons name="person" size={40} color={colors.bg.paper} />
         </View>
-        <Text style={styles.name}>
-          {user ? user.email : "Гость"}
-        </Text>
-        <Text style={styles.plan}>
-          {user ? "Аккаунт подключён" : "Без аккаунта"}
-        </Text>
+        <Text style={styles.name}>{user?.email ?? "—"}</Text>
+        <Text style={styles.plan}>Аккаунт подключён</Text>
       </View>
 
-      {/* Menu items */}
       <View style={styles.menu}>
-        <Pressable style={styles.menuItem} onPress={handleAuth}>
-          <Ionicons
-            name={user ? "log-out-outline" : "log-in-outline"}
-            size={22}
-            color={user ? colors.destructive : colors.brand.amber}
-          />
-          <Text style={[styles.menuText, user && { color: colors.destructive }]}>
-            {user ? "Выйти" : "Войти / Регистрация"}
-          </Text>
+        <Pressable style={styles.menuItem} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={22} color={colors.destructive} />
+          <Text style={[styles.menuText, { color: colors.destructive }]}>Выйти</Text>
           <Ionicons name="chevron-forward" size={18} color={colors.text.muted} />
         </Pressable>
 
@@ -61,7 +44,6 @@ export default function ProfileScreen() {
         </Pressable>
       </View>
 
-      {/* Version */}
       <Text style={styles.version}>Архив звуков · v1.0.0</Text>
     </View>
   );
