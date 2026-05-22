@@ -1,37 +1,14 @@
-import { Pressable } from "react-native";
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../../src/theme";
-import { useAuth } from "../../src/lib/AuthProvider";
 
 export default function TabsLayout() {
-  const router = useRouter();
-  const { user, signOut } = useAuth();
-
   return (
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg.paper },
         headerTitleStyle: { fontFamily: fonts.headingBold, fontSize: 18, color: colors.text.primary },
         headerShadowVisible: false,
-        headerRight: () => (
-          <Pressable
-            style={{ marginRight: 16 }}
-            onPress={() => {
-              if (user) {
-                signOut();
-              } else {
-                router.push("/auth");
-              }
-            }}
-          >
-            <Ionicons
-              name={user ? "log-out-outline" : "person-circle-outline"}
-              size={26}
-              color={user ? colors.text.muted : colors.brand.amber}
-            />
-          </Pressable>
-        ),
         tabBarStyle: {
           backgroundColor: colors.bg.paper,
           borderTopColor: colors.border,
@@ -65,6 +42,13 @@ export default function TabsLayout() {
           title: "Поиск",
           headerTitle: "Голосовой поиск",
           tabBarIcon: ({ color, size }) => <Ionicons name="search-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Профиль",
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
         }}
       />
     </Tabs>
