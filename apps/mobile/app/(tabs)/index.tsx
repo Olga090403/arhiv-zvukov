@@ -40,9 +40,11 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const [uploads, setUploads] = useState<DbUpload[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchUploads = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const sessionId = await getSessionId();
 
@@ -58,10 +60,14 @@ export default function HomeScreen() {
         query = query.eq("session_id", sessionId);
       }
 
-      const { data } = await query;
+      const { data, error: dbError } = await query;
+      if (dbError) {
+        setError(dbError.message);
+        return;
+      }
       setUploads((data as DbUpload[]) ?? []);
     } catch {
-      // network error — keep existing list
+      setError("Нет подключения к серверу");
     } finally {
       setLoading(false);
     }
@@ -108,10 +114,15 @@ export default function HomeScreen() {
             <View style={styles.empty}>
               <ActivityIndicator size="large" color={colors.brand.amber} />
             </View>
+          ) : error ? (
+            <View style={styles.empty}>
+              <Ionicons name="alert-circle-outline" size={48} color={colors.destructive} />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
           ) : (
             <View style={styles.empty}>
               <Ionicons name="cloud-upload-outline" size={48} color={colors.text.muted} />
-              <Text style={styles.emptyText}>У тебя пока нет загрузок</Text>
+              <Text style={styles.emptyText}>Здесь пока ничего нет</Text>
               <Text style={styles.emptyHint}>Запиши первый звук!</Text>
             </View>
           )
@@ -233,5 +244,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 13,
     color: colors.brand.amber,
+  },
+  errorText: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    color: colors.destructive,
+    textAlign: "center",
   },
 });
