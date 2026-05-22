@@ -1,17 +1,22 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, ScrollView, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../src/theme";
+import { supabase } from "../src/lib/supabase";
+import { useAuth } from "../src/lib/AuthProvider";
+import { getSessionId } from "../src/lib/session";
 
 export default function ConfirmScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [location, setLocation] = useState("");
   const [licenseAgreed, setLicenseAgreed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!title.trim()) {
       Alert.alert("Ошибка", "Введи название звука");
       return;
@@ -21,9 +26,37 @@ export default function ConfirmScreen() {
       return;
     }
 
-    Alert.alert("Отправлено!", "Звук отправлен на модерацию", [
-      { text: "OK", onPress: () => router.replace("/") },
-    ]);
+    setSubmitting(true);
+    try {
+      const sessionId = await getSessionId();
+      const tagArray = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const { error } = await supabase.from("uploads").insert({
+        session_id: sessionId,
+        user_id: user?.id ?? null,
+        title: title.trim(),
+        file_url: "pending://mobile-recording",
+        tags: tagArray.length > 0 ? tagArray : null,
+        location: location.trim() || null,
+        license_agreed: true,
+      });
+
+      if (error) {
+        Alert.alert("Ошибка", error.message);
+        return;
+      }
+
+      Alert.alert("Отправлено!", "Звук отправлен на модерацию", [
+        { text: "OK", onPress: () => router.replace("/") },
+      ]);
+    } catch {
+      Alert.alert("Ошибка", "Нет подключения к серверу");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -87,11 +120,18 @@ export default function ConfirmScreen() {
 
       {/* Submit */}
       <Pressable
-        style={[styles.submitBtn, (!title.trim() || !licenseAgreed) && styles.submitBtnDisabled]}
+        style={[styles.submitBtn, (!title.trim() || !licenseAgreed || submitting) && styles.submitBtnDisabled]}
         onPress={handleSubmit}
+        disabled={submitting}
       >
-        <Ionicons name="cloud-upload-outline" size={20} color={colors.bg.paper} />
-        <Text style={styles.submitText}>Отправить на модерацию</Text>
+        {submitting ? (
+          <ActivityIndicator size="small" color={colors.bg.paper} />
+        ) : (
+          <>
+            <Ionicons name="cloud-upload-outline" size={20} color={colors.bg.paper} />
+            <Text style={styles.submitText}>Отправить на модерацию</Text>
+          </>
+        )}
       </Pressable>
 
       {/* Back */}

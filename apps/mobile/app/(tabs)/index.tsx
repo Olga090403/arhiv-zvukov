@@ -1,8 +1,12 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../../src/theme";
-import { MOCK_UPLOADS, MockUpload } from "../../src/mock";
+import { supabase } from "../../src/lib/supabase";
+import { useAuth } from "../../src/lib/AuthProvider";
+import { getSessionId } from "../../src/lib/session";
+import type { DbUpload } from "../../src/lib/database.types";
 
 const STATUS_CONFIG = {
   pending: { label: "На модерации", color: colors.pending, icon: "time-outline" as const },
@@ -10,7 +14,7 @@ const STATUS_CONFIG = {
   rejected: { label: "Отклонён", color: colors.destructive, icon: "close-circle-outline" as const },
 };
 
-function UploadItem({ item }: { item: MockUpload }) {
+function UploadItem({ item }: { item: DbUpload }) {
   const st = STATUS_CONFIG[item.status];
   return (
     <View style={styles.uploadCard}>
@@ -22,7 +26,7 @@ function UploadItem({ item }: { item: MockUpload }) {
         </View>
       </View>
       <View style={styles.uploadMeta}>
-        {item.tags.slice(0, 3).map((tag) => (
+        {(item.tags ?? []).slice(0, 3).map((tag) => (
           <Text key={tag} style={styles.tag}>#{tag}</Text>
         ))}
         {item.location && <Text style={styles.location}>· {item.location}</Text>}
@@ -33,13 +37,48 @@ function UploadItem({ item }: { item: MockUpload }) {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const [uploads, setUploads] = useState<DbUpload[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUploads = useCallback(async () => {
+    setLoading(true);
+    try {
+      const sessionId = await getSessionId();
+
+      let query = supabase
+        .from("uploads")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (user) {
+        query = query.eq("user_id", user.id);
+      } else {
+        query = query.eq("session_id", sessionId);
+      }
+
+      const { data } = await query;
+      setUploads((data as DbUpload[]) ?? []);
+    } catch {
+      // network error — keep existing list
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchUploads();
+  }, [fetchUploads]);
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={MOCK_UPLOADS}
+        data={uploads}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        refreshing={loading}
+        onRefresh={fetchUploads}
         ListHeaderComponent={
           <>
             {/* Record CTA */}
@@ -59,16 +98,23 @@ export default function HomeScreen() {
             {/* Section header */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Мои загрузки</Text>
-              <Text style={styles.sectionCount}>{MOCK_UPLOADS.length}</Text>
+              {!loading && <Text style={styles.sectionCount}>{uploads.length}</Text>}
             </View>
           </>
         }
         renderItem={({ item }) => <UploadItem item={item} />}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Ionicons name="cloud-upload-outline" size={48} color={colors.text.muted} />
-            <Text style={styles.emptyText}>У тебя пока нет загрузок</Text>
-          </View>
+          loading ? (
+            <View style={styles.empty}>
+              <ActivityIndicator size="large" color={colors.brand.amber} />
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <Ionicons name="cloud-upload-outline" size={48} color={colors.text.muted} />
+              <Text style={styles.emptyText}>У тебя пока нет загрузок</Text>
+              <Text style={styles.emptyHint}>Запиши первый звук!</Text>
+            </View>
+          )
         }
       />
     </View>
@@ -182,5 +228,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 14,
     color: colors.text.muted,
+  },
+  emptyHint: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.brand.amber,
   },
 });
