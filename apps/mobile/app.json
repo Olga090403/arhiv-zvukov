@@ -15,7 +15,11 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.arhivzvukov.mobile"
+      "bundleIdentifier": "com.arhivzvukov.mobile",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Для записи звуков в архив",
+        "NSLocationWhenInUseUsageDescription": "Для указания места записи звука"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,8 +27,27 @@
         "backgroundColor": "#F5F1E8"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.arhivzvukov.mobile"
+      "package": "com.arhivzvukov.mobile",
+      "permissions": [
+        "RECORD_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Для записи звуков в архив"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Для указания места записи звука"
+        }
+      ]
+    ]
   }
 }

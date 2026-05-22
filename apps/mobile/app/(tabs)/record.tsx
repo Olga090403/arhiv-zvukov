@@ -1,27 +1,23 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { Audio } from "expo-av";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, fonts, spacing, radius } from "../../src/theme";
+import { colors, fonts, spacing } from "../../src/theme";
 
 export default function RecordScreen() {
   const router = useRouter();
-  const [recording, setRecording] = useState(false);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [metering, setMetering] = useState<number[]>(new Array(24).fill(-160));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (recording) {
-      intervalRef.current = setInterval(() => {
-        setSeconds((s) => s + 1);
-      }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [recording]);
+  }, []);
 
   function formatTime(s: number) {
     const min = Math.floor(s / 60).toString().padStart(2, "0");
@@ -29,31 +25,112 @@ export default function RecordScreen() {
     return `${min}:${sec}`;
   }
 
-  function handleToggle() {
-    if (recording) {
-      setRecording(false);
-      router.push("/confirm");
-    } else {
+  async function startRecording() {
+    try {
+      const { granted } = await Audio.requestPermissionsAsync();
+      if (!granted) {
+        Alert.alert("Нет доступа", "Разреши доступ к микрофону в настройках");
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording: rec } = await Audio.Recording.createAsync(
+        {
+          isMeteringEnabled: true,
+          android: {
+            extension: ".m4a",
+            outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+            audioEncoder: Audio.AndroidAudioEncoder.AAC,
+            sampleRate: 44100,
+            numberOfChannels: 1,
+            bitRate: 128000,
+          },
+          ios: {
+            extension: ".m4a",
+            outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+            audioQuality: Audio.IOSAudioQuality.HIGH,
+            sampleRate: 44100,
+            numberOfChannels: 1,
+            bitRate: 128000,
+          },
+          web: {
+            mimeType: "audio/webm",
+            bitsPerSecond: 128000,
+          },
+        },
+        (status) => {
+          if (status.isRecording && status.metering != null) {
+            setMetering((prev) => {
+              const next = [...prev.slice(1), status.metering!];
+              return next;
+            });
+          }
+        },
+        100
+      );
+
+      setRecording(rec);
+      setIsRecording(true);
       setSeconds(0);
-      setRecording(true);
+
+      intervalRef.current = setInterval(() => {
+        setSeconds((s) => s + 1);
+      }, 1000);
+    } catch (err) {
+      Alert.alert("Ошибка", "Не удалось начать запись");
     }
   }
 
-  // Mock level bars
-  const bars = Array.from({ length: 24 }, (_, i) => {
-    const base = recording ? 15 + Math.sin(i * 0.8 + seconds * 2) * 35 + Math.random() * 20 : 8;
-    return Math.max(8, Math.min(100, base));
+  async function stopRecording() {
+    if (!recording) return;
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    setIsRecording(false);
+
+    try {
+      await recording.stopAndUnloadAsync();
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+
+      const uri = recording.getURI();
+      setRecording(null);
+      setMetering(new Array(24).fill(-160));
+
+      if (uri) {
+        router.push({ pathname: "/confirm", params: { audioUri: uri, duration: seconds.toString() } });
+      }
+    } catch {
+      Alert.alert("Ошибка", "Не удалось сохранить запись");
+    }
+  }
+
+  function handleToggle() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }
+
+  const bars = metering.map((db) => {
+    const normalized = Math.max(0, Math.min(1, (db + 60) / 60));
+    return Math.max(8, normalized * 100);
   });
 
   return (
     <View style={styles.container}>
-      {/* Timer */}
       <Text style={styles.timer}>{formatTime(seconds)}</Text>
       <Text style={styles.hint}>
-        {recording ? "Идёт запись…" : "Нажми, чтобы начать запись"}
+        {isRecording ? "Идёт запись…" : "Нажми, чтобы начать запись"}
       </Text>
 
-      {/* Level bars */}
       <View style={styles.barsContainer}>
         {bars.map((h, i) => (
           <View
@@ -62,20 +139,19 @@ export default function RecordScreen() {
               styles.bar,
               {
                 height: `${h}%`,
-                backgroundColor: recording ? colors.brand.amber : colors.text.muted + "30",
+                backgroundColor: isRecording ? colors.brand.amber : colors.text.muted + "30",
               },
             ]}
           />
         ))}
       </View>
 
-      {/* Record button */}
       <View style={styles.controls}>
         <Pressable
-          style={[styles.recordBtn, recording && styles.recordBtnActive]}
+          style={[styles.recordBtn, isRecording && styles.recordBtnActive]}
           onPress={handleToggle}
         >
-          {recording ? (
+          {isRecording ? (
             <View style={styles.stopIcon} />
           ) : (
             <Ionicons name="mic" size={40} color={colors.bg.paper} />
@@ -83,7 +159,7 @@ export default function RecordScreen() {
         </Pressable>
 
         <Text style={styles.controlHint}>
-          {recording ? "Остановить и перейти к подтверждению" : "Записать звук"}
+          {isRecording ? "Остановить и перейти к подтверждению" : "Записать звук"}
         </Text>
       </View>
     </View>

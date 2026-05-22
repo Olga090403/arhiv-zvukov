@@ -1,19 +1,46 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable, Linking } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable, Linking, Alert, Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../../src/theme";
 
+const WEB_SEARCH_URL = "https://arhiv-zvukov.vercel.app/search";
+
 export default function VoiceSearchScreen() {
+  const [query, setQuery] = useState("");
   const [listening, setListening] = useState(false);
 
-  function handlePress() {
+  function handleVoicePress() {
     if (listening) {
       setListening(false);
-      Linking.openURL("https://arhiv-zvukov.vercel.app/search?q=скрип+снега");
+      if (query.trim()) {
+        openWebSearch(query.trim());
+      }
     } else {
       setListening(true);
-      setTimeout(() => setListening(false), 3000);
+      setTimeout(() => {
+        setListening(false);
+        Alert.alert(
+          "Голосовой поиск",
+          "Распознавание речи требует dev-build. Введи запрос текстом и нажми «Искать».",
+        );
+      }, 2500);
     }
+  }
+
+  function openWebSearch(q: string) {
+    const url = `${WEB_SEARCH_URL}?q=${encodeURIComponent(q)}`;
+    Linking.openURL(url).catch(() => {
+      Alert.alert("Ошибка", "Не удалось открыть браузер");
+    });
+  }
+
+  function handleTextSearch() {
+    Keyboard.dismiss();
+    if (!query.trim()) {
+      Alert.alert("Пусто", "Введи описание звука");
+      return;
+    }
+    openWebSearch(query.trim());
   }
 
   return (
@@ -30,7 +57,7 @@ export default function VoiceSearchScreen() {
         {/* Mic button */}
         <Pressable
           style={[styles.micBtn, listening && styles.micBtnActive]}
-          onPress={handlePress}
+          onPress={handleVoicePress}
         >
           <Ionicons
             name={listening ? "mic" : "mic-outline"}
@@ -40,13 +67,29 @@ export default function VoiceSearchScreen() {
         </Pressable>
 
         <Text style={styles.title}>
-          {listening ? "Слушаю…" : "Голосовой поиск"}
+          {listening ? "Слушаю…" : "Поиск звуков"}
         </Text>
         <Text style={styles.subtitle}>
           {listening
             ? "Скажи, какой звук тебе нужен"
-            : "Нажми на микрофон и опиши звук голосом"}
+            : "Опиши звук голосом или введи текстом"}
         </Text>
+
+        {/* Text search fallback */}
+        <View style={styles.searchRow}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="скрип снега, гудок метро…"
+            placeholderTextColor={colors.text.muted}
+            value={query}
+            onChangeText={setQuery}
+            returnKeyType="search"
+            onSubmitEditing={handleTextSearch}
+          />
+          <Pressable style={styles.searchBtn} onPress={handleTextSearch}>
+            <Ionicons name="search" size={20} color={colors.bg.paper} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Info */}
@@ -71,6 +114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   ring: {
     position: "absolute",
@@ -112,6 +156,31 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     textAlign: "center",
     maxWidth: 260,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    width: "100%",
+    marginTop: spacing.lg,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: colors.text.primary,
+    backgroundColor: colors.card,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 14,
+  },
+  searchBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.brand.black,
+    justifyContent: "center",
+    alignItems: "center",
   },
   info: {
     flexDirection: "row",
