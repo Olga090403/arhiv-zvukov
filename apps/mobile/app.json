@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Архив звуков",
+    "slug": "arhiv-zvukov",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "arhiv-zvukov",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F1E8"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.arhivzvukov.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5F1E8"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.arhivzvukov.mobile"
+    },
+    "plugins": ["expo-router"]
+  }
+}
