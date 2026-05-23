@@ -16,4 +16,5 @@ export function mapCategory(tags: string[]): string {
   return "Все";
 }
 
-export const WEB_BASE_URL = "https://arhiv-zvukov.vercel.app";
+export const WEB_BASE_URL =
+  process.env.EXPO_PUBLIC_WEB_BASE_URL ?? "http://localhost:5173";
