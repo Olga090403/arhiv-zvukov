@@ -31,6 +31,14 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="catalog"
+        options={{
+          title: "Каталог",
+          headerTitle: "Каталог",
+          tabBarIcon: ({ color, size }) => <Ionicons name="albums-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="record"
         options={{
           title: "Запись",
@@ -39,11 +47,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="favorites"
         options={{
-          title: "Поиск",
-          headerTitle: "Голосовой поиск",
-          tabBarIcon: ({ color, size }) => <Ionicons name="search-outline" size={size} color={color} />,
+          title: "Избранное",
+          headerTitle: "Избранное",
+          tabBarIcon: ({ color, size }) => <Ionicons name="heart-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
