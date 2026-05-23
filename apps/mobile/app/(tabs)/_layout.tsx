@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, fonts, gradients } from "../../src/theme";
+import { colors, fonts } from "../../src/theme";
 import { GradientHeaderBackground } from "../../src/components/GradientBackground";
 
 export default function TabsLayout() {
@@ -11,8 +11,8 @@ export default function TabsLayout() {
         headerTitleStyle: { fontFamily: fonts.headingBold, fontSize: 18, color: colors.text.primary },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: gradients.warm.colors[0],
-          borderTopColor: "rgba(255, 255, 255, 0.35)",
+          backgroundColor: colors.bg.paper,
+          borderTopColor: colors.border,
           height: 88,
           paddingBottom: 28,
           paddingTop: 8,

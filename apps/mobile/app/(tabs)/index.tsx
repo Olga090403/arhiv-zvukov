@@ -77,21 +77,31 @@ export default function HomeScreen() {
         onRefresh={fetchUploads}
         ListHeaderComponent={
           <>
-            {/* Record CTA */}
+            <View style={styles.hero}>
+              <Text style={styles.eyebrow}>БЕСПЛАТНО · CC0</Text>
+              <Text style={styles.heroTitle}>
+                ЗАБЫТЫЕ{"\n"}
+                <Text style={styles.heroHighlight}>ЗВУКИ</Text>
+                {"\n"}ЖИВУТ ЗДЕСЬ
+              </Text>
+              <Text style={styles.heroSub}>
+                Запиши редкий бытовой звук и добавь в архив за 30 секунд
+              </Text>
+            </View>
+
             <Pressable
               style={styles.recordButton}
               onPress={() => router.push("/record")}
             >
               <View style={styles.recordIcon}>
-                <Ionicons name="mic" size={36} color={colors.bg.paper} />
+                <Ionicons name="mic" size={32} color={colors.brand.black} />
               </View>
               <Text style={styles.recordTitle}>Записать звук</Text>
               <Text style={styles.recordSubtitle}>
-                Услышал интересный звук? Запиши за 30 секунд
+                Услышал интересный звук? Запиши прямо сейчас
               </Text>
             </Pressable>
 
-            {/* Section header */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Мои загрузки</Text>
               {!loading && <Text style={styles.sectionCount}>{uploads.length}</Text>}
@@ -130,30 +140,59 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.md,
   },
+  hero: {
+    marginBottom: spacing.lg,
+  },
+  eyebrow: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.text.muted,
+    marginBottom: spacing.sm,
+  },
+  heroTitle: {
+    fontFamily: fonts.headingBold,
+    fontSize: 28,
+    lineHeight: 32,
+    letterSpacing: -0.5,
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
+  },
+  heroHighlight: {
+    backgroundColor: colors.brand.amber,
+    color: colors.brand.black,
+  },
+  heroSub: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    color: colors.text.secondary,
+    lineHeight: 20,
+  },
   recordButton: {
     backgroundColor: colors.brand.black,
     borderRadius: radius.xl,
     padding: spacing.xl,
     alignItems: "center",
     gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   recordIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: colors.brand.amber,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   recordTitle: {
     fontFamily: fonts.headingBold,
-    fontSize: 22,
+    fontSize: 20,
     color: colors.bg.paper,
   },
   recordSubtitle: {
     fontFamily: fonts.body,
-    fontSize: 14,
+    fontSize: 13,
     color: colors.text.muted,
     textAlign: "center",
   },
@@ -174,8 +213,10 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
   },
   uploadCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.72)",
+    backgroundColor: colors.card,
     borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
     padding: spacing.md,
     gap: spacing.sm,
   },

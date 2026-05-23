@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Play, ArrowRight, Shuffle, Headphones, ArrowDownRight } from "lucide-react";
-import { formatDuration } from "@/lib/mockData";
+import { Input } from "@/components/ui/input";
+import { Search, Shuffle, ArrowRight, Play } from "lucide-react";
+import { CATEGORIES, formatDuration } from "@/lib/mockData";
 import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
 import SoundCardSkeleton from "@/components/SoundCardSkeleton";
@@ -16,28 +15,108 @@ const MARQUEE_ITEMS = [
   "КАПЕЛЬ С КРЫШИ", "✦", "ДИСКОВЫЙ ТЕЛЕФОН", "✦",
 ];
 
+const CATEGORY_ICONS: Record<string, string> = {
+  Природа: "❄",
+  Город: "🚇",
+  Техника: "💡",
+  Ностальгия: "📼",
+  Атмосфера: "🌙",
+};
+
+function WaveformBars({ seed, active }: { seed: number; active?: boolean }) {
+  const bars = useMemo(() => {
+    return Array.from({ length: 40 }, (_, i) => {
+      const h = 20 + Math.sin(i * 0.45 + seed) * 28 + Math.cos(i * 0.25 + seed * 2) * 12;
+      return Math.max(12, h);
+    });
+  }, [seed]);
+
+  return (
+    <div className="flex h-12 items-end gap-[2px]">
+      {bars.map((h, i) => (
+        <div
+          key={i}
+          className={`flex-1 rounded-full transition-colors ${
+            active ? "bg-brand-amber" : "bg-foreground/10"
+          }`}
+          style={{ height: `${h}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FloatCard({
+  sound,
+  index,
+  onClick,
+}: {
+  sound: DbSound;
+  index: number;
+  onClick: () => void;
+}) {
+  const rotations = ["-rotate-[4deg]", "rotate-[3deg]", "-rotate-[1.5deg]"];
+  const positions = [
+    "top-0 left-0 z-30",
+    "top-12 right-0 z-20",
+    "bottom-0 left-[15%] z-10",
+  ];
+
+  return (
+    <article
+      className={`group absolute w-full max-w-[280px] cursor-pointer rounded-xl border border-border bg-card p-5 shadow-xl transition-transform hover:-translate-y-1 hover:rotate-0 ${positions[index]} ${rotations[index]}`}
+      onClick={onClick}
+    >
+      <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        {(sound.tags[0] ?? "архив").toLowerCase()}
+      </span>
+      <h3 className="mt-1 text-sm font-semibold leading-snug">{sound.title}</h3>
+      <div className="mt-3">
+        <WaveformBars seed={index * 1.7} />
+      </div>
+      <div className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
+        <Play className="h-3 w-3" />
+        Слушать
+      </div>
+    </article>
+  );
+}
+
 export default function LandingPage() {
   const [sounds, setSounds] = useState<DbSound[]>([]);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchFeatured() {
-      const { data, error: err } = await supabase
-        .from("sounds")
-        .select("*")
-        .eq("status", "approved")
-        .order("listen_count", { ascending: false })
-        .limit(3);
+      const [featuredRes, countRes] = await Promise.all([
+        supabase
+          .from("sounds")
+          .select("*")
+          .eq("status", "approved")
+          .order("listen_count", { ascending: false })
+          .limit(3),
+        supabase
+          .from("sounds")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "approved"),
+      ]);
 
-      if (err) {
-        console.error("Supabase error:", err);
+      if (featuredRes.error) {
+        console.error("Supabase error:", featuredRes.error);
         setError("Не удалось загрузить звуки");
         toast.error("Ошибка загрузки данных");
       } else {
-        setSounds(data ?? []);
+        setSounds(featuredRes.data ?? []);
       }
+
+      if (!countRes.error && countRes.count != null) {
+        setTotalCount(countRes.count);
+      }
+
       setLoading(false);
     }
     fetchFeatured();
@@ -56,177 +135,105 @@ export default function LandingPage() {
     }
   }
 
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    navigate(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+  }
+
   return (
-    <div className="flex flex-col gap-0 -mt-8 -mx-4 md:-mx-8">
-      {/* ── Hero — bold typographic ── */}
-      <section className="relative overflow-hidden min-h-[85vh] flex flex-col justify-between">
-        {/* Warm gradient background */}
+    <div className="flex flex-col gap-0 -mt-8">
+      {/* Hero */}
+      <section className="relative overflow-hidden px-4 md:px-8 py-16 md:py-20 min-h-[min(88vh,900px)] flex flex-col justify-center">
         <div
-          className="absolute inset-0"
+          className="pointer-events-none absolute right-[-8%] top-[8%] h-[420px] w-[520px] rounded-full"
           style={{
-            background: "linear-gradient(145deg, #FDF6EE 0%, #FCEBD4 20%, #F8C86C 45%, #F2994A 65%, #E8643A 85%, #D94E3B 100%)",
-          }}
-        />
-        {/* Secondary amber blob */}
-        <div
-          className="absolute"
-          style={{
-            width: 600,
-            height: 500,
-            right: "-5%",
-            top: "10%",
-            borderRadius: "45% 55% 60% 40% / 50% 40% 60% 50%",
-            filter: "blur(80px)",
-            opacity: 0.5,
-            pointerEvents: "none",
-            background: "radial-gradient(ellipse at center, #FFD700 0%, #F2C94C 40%, transparent 75%)",
-          }}
-        />
-        {/* Pink accent blob */}
-        <div
-          className="absolute"
-          style={{
-            width: 400,
-            height: 350,
-            left: "10%",
-            bottom: "5%",
-            borderRadius: "55% 45% 40% 60% / 45% 55% 45% 55%",
-            filter: "blur(70px)",
-            opacity: 0.3,
-            pointerEvents: "none",
-            background: "radial-gradient(ellipse at center, #FF9A76 0%, #FFB88C 50%, transparent 80%)",
-          }}
-        />
-        {/* Grain texture */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-25 mix-blend-multiply"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundSize: "128px 128px",
+            background: "radial-gradient(ellipse, rgba(242, 201, 76, 0.22) 0%, transparent 70%)",
           }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-4 md:px-8 py-16">
-          <div className="mx-auto max-w-7xl w-full">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              Бесплатно · без регистрации · CC0
+            </p>
 
-            {/* ── Title block with geometric shapes ── */}
-            <div className="space-y-4 md:space-y-2">
-              {/* Line 1 */}
-              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
-                {/* Circle + arrow icon */}
-                <div className="hidden md:flex items-center gap-2 text-brand-black/70">
-                  <div className="h-6 w-6 rounded-full border-2 border-brand-black/50" />
-                  <ArrowRight className="h-6 w-6" />
-                </div>
-                <h1
-                  className="font-heading font-black tracking-tight leading-[0.9]"
-                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
-                >
-                  найди
-                </h1>
-                {/* Arrow icon */}
-                <ArrowDownRight
-                  className="hidden md:block text-brand-black/60"
-                  style={{ width: "clamp(2rem, 4vw, 3.5rem)", height: "clamp(2rem, 4vw, 3.5rem)" }}
-                />
-                {/* Decorative circles */}
-                <div className="hidden lg:flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full" style={{ background: "#0F0F12", opacity: 0.15 }} />
-                  <div className="h-7 w-7 rounded-full" style={{ background: "#FDF6EE", opacity: 0.7 }} />
-                </div>
-              </div>
+            <h1 className="font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold uppercase leading-[0.92] tracking-tight">
+              Забытые
+              <br />
+              <span className="bg-brand-amber px-1 text-brand-black">звуки</span>
+              <br />
+              живут здесь
+            </h1>
 
-              {/* Line 2 */}
-              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
-                {/* Double semicircles */}
-                <div className="hidden md:flex items-center -space-x-1 text-brand-black/50">
-                  <div className="h-10 w-5 rounded-l-full border-2 border-r-0 border-brand-black/30" />
-                  <div className="h-10 w-5 rounded-l-full border-2 border-r-0 border-brand-black/30" />
-                </div>
-                <h1
-                  className="font-heading font-black tracking-tight leading-[0.9]"
-                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12" }}
-                >
-                  звук
-                </h1>
-                <span
-                  className="font-heading font-black"
-                  style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#0F0F12", opacity: 0.2 }}
-                >
-                  .
-                </span>
-                {/* Triangles */}
-                <div className="hidden lg:flex items-center gap-1">
-                  <div
-                    style={{
-                      width: 0,
-                      height: 0,
-                      borderLeft: "18px solid transparent",
-                      borderRight: "18px solid transparent",
-                      borderBottom: "30px solid rgba(15,15,18,0.15)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: 0,
-                      height: 0,
-                      borderLeft: "14px solid transparent",
-                      borderRight: "14px solid transparent",
-                      borderBottom: "24px solid rgba(15,15,18,0.1)",
-                      transform: "rotate(30deg)",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+            <p className="mt-6 max-w-lg text-base md:text-lg text-muted-foreground leading-relaxed">
+              Найди «скрип снега под валенком», искази пресетом Lo-fi и собери микс за&nbsp;2&nbsp;минуты — прямо в браузере.
+            </p>
 
-            {/* ── Subtitle + button ── */}
-            <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-              <p className="text-base md:text-lg leading-relaxed max-w-full" style={{ color: "rgba(15,15,18,0.6)" }}>
-                Кураторская библиотека звуков.
-                Ищи и&nbsp;собери диджей-микс за&nbsp;2&nbsp;минуты
-              </p>
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5 gap-2 shrink-0 h-12 px-8 text-base"
-                onClick={randomSound}
-              >
-                <Shuffle className="h-5 w-5" />
+            <form onSubmit={handleSearch} className="mt-8 flex max-w-md items-center gap-3 rounded-full border border-border bg-card py-1.5 pl-4 pr-1.5 shadow-lg shadow-brand-black/5">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="жужжание лампы, метро 80-х…"
+                className="h-10 flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+              />
+              <Button type="submit" className="rounded-full shrink-0">
+                Найти
+              </Button>
+            </form>
+
+            <div className="mt-4">
+              <Button variant="outline" size="lg" className="rounded-full gap-2" onClick={randomSound}>
+                <Shuffle className="h-4 w-4" />
                 Случайный звук
               </Button>
             </div>
-          </div>
-        </div>
 
-        {/* ── Stats bar ── */}
-        <div className="relative z-10 border-t border-brand-black/10 px-4 md:px-8 py-5">
-          <div className="mx-auto max-w-7xl flex gap-12 md:gap-20">
-            {[
-              { value: `${sounds.length || "…"}`, label: "звуков" },
-              { value: "3", label: "пресета" },
-              { value: "CC0", label: "лицензия" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className="font-heading text-3xl font-bold md:text-5xl" style={{ color: "#0F0F12" }}>
-                  {stat.value}
-                </p>
-                <p className="text-sm md:text-base mt-1" style={{ color: "rgba(15,15,18,0.45)" }}>{stat.label}</p>
-              </div>
-            ))}
+            <div className="mt-10 flex gap-10 border-t border-border pt-6">
+              {[
+                { value: totalCount ?? (loading ? "…" : sounds.length), label: "звуков в архиве" },
+                { value: "3", label: "пресета" },
+                { value: "0 ₽", label: "на старте" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-heading text-2xl font-bold md:text-3xl tracking-tight">{stat.value}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative hidden min-h-[340px] lg:block">
+            {loading
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`absolute w-full max-w-[280px] rounded-xl border border-border bg-card p-5 ${["top-0 left-0", "top-12 right-0", "bottom-0 left-[15%]"][i]}`}
+                  >
+                    <SoundCardSkeleton />
+                  </div>
+                ))
+              : sounds.map((sound, i) => (
+                  <FloatCard
+                    key={sound.id}
+                    sound={sound}
+                    index={i}
+                    onClick={() => navigate(`/sound/${sound.id}`)}
+                  />
+                ))}
           </div>
         </div>
       </section>
 
-      {/* ── Marquee ── */}
-      <div className="border-y border-border bg-card/50 py-4 overflow-hidden">
+      {/* Marquee */}
+      <div className="overflow-hidden border-y border-border bg-card/60 py-4">
         <div className="animate-marquee flex whitespace-nowrap">
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span
               key={i}
-              className={`mx-4 font-heading text-2xl font-bold md:text-4xl ${
-                item === "✦" ? "text-brand-amber" : "text-foreground/15"
+              className={`mx-5 font-heading text-2xl font-bold md:text-4xl ${
+                item === "✦" ? "text-brand-amber" : "text-foreground/10"
               }`}
             >
               {item}
@@ -235,122 +242,81 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ── Featured sounds ── */}
-      <section className="px-4 md:px-8 py-16">
-        <div className="mx-auto max-w-7xl space-y-10">
-          <div className="flex items-end justify-between">
-            <div className="space-y-2">
-              <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
-                Избранное из архива
-              </span>
-              <h2 className="font-heading text-3xl font-bold md:text-4xl">
-                Послушай прямо сейчас
-              </h2>
-            </div>
-            <Button
-              variant="ghost"
-              className="hidden sm:flex gap-2 text-muted-foreground"
-              onClick={() => navigate("/search")}
-            >
-              Все звуки
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+      {/* Featured — mobile + fallback */}
+      <section className="px-4 md:px-8 py-16 lg:hidden">
+        <div className="mx-auto max-w-7xl space-y-8">
+          <div>
+            <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
+              Избранное из архива
+            </span>
+            <h2 className="mt-2 font-heading text-3xl font-bold">Послушай прямо сейчас</h2>
           </div>
-
           {error && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-              <p className="text-sm text-destructive">{error}</p>
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
+              {error}
             </div>
           )}
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="grid gap-4">
             {loading
               ? Array.from({ length: 3 }).map((_, i) => <SoundCardSkeleton key={i} />)
-              : sounds.map((sound, idx) => (
+              : sounds.map((sound) => (
                   <article
                     key={sound.id}
-                    className="group cursor-pointer space-y-4"
+                    className="cursor-pointer rounded-xl border border-border bg-card p-5 transition-colors hover:border-brand-amber"
                     onClick={() => navigate(`/sound/${sound.id}`)}
                   >
-                    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10">
-                      <span className="absolute top-4 left-5 font-heading text-5xl font-bold opacity-10">
-                        {String(idx + 1).padStart(2, "0")}
-                      </span>
-                      <div className="flex h-20 items-end gap-[2px] pt-6">
-                        {Array.from({ length: 48 }).map((_, i) => {
-                          const h = 20 + Math.sin(i * 0.5 + idx * 2) * 30 + Math.cos(i * 0.3) * 15;
-                          return (
-                            <div
-                              key={i}
-                              className="flex-1 rounded-full bg-foreground/10 group-hover:bg-primary/40 transition-colors"
-                              style={{ height: `${Math.max(8, h)}%` }}
-                            />
-                          );
-                        })}
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
-                          <Play className="h-5 w-5 ml-0.5" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5 px-1">
-                      <h3 className="font-medium text-base leading-snug group-hover:text-primary transition-colors">
-                        {sound.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="font-mono">{formatDuration(sound.duration)}</span>
-                        <span>·</span>
-                        <span>{sound.author}</span>
-                        <span>·</span>
-                        <Badge variant="secondary" className="text-[10px] py-0 px-1.5 font-mono">
-                          {sound.license}
-                        </Badge>
-                      </div>
-                      <div className="flex gap-1.5">
-                        {sound.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="font-mono text-[10px] text-muted-foreground/70">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
+                    <h3 className="font-medium">{sound.title}</h3>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-mono">{formatDuration(sound.duration)}</span>
+                      <span>·</span>
+                      <span>{sound.author}</span>
                     </div>
                   </article>
                 ))}
           </div>
-
-          {!loading && !error && sounds.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                В архиве пока нет звуков. Добавь первый через Dashboard!
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
-      <Separator className="mx-4 md:mx-8" />
-
-      {/* ── How it works ── */}
+      {/* Categories */}
       <section className="px-4 md:px-8 py-16">
+        <div className="mx-auto max-w-7xl">
+          <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">Каталог</span>
+          <h2 className="mt-2 mb-8 font-heading text-3xl font-bold md:text-4xl">
+            Исчезающие звуки по категориям
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+            {CATEGORIES.filter((c) => c !== "Все").map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => navigate(`/search?category=${encodeURIComponent(cat)}`)}
+                className="rounded-xl border border-border bg-card py-5 text-center transition-all hover:-translate-y-0.5 hover:border-brand-amber"
+              >
+                <div className="text-2xl mb-2">{CATEGORY_ICONS[cat] ?? "🔊"}</div>
+                <div className="text-sm font-semibold">{cat}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="px-4 md:px-8 py-16 border-t border-border">
         <div className="mx-auto max-w-7xl">
           <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
             Как это работает
           </span>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 mt-8">
+          <h2 className="mt-2 mb-10 font-heading text-3xl font-bold md:text-4xl">
+            От поиска до микса за 2 минуты
+          </h2>
+          <div className="grid gap-8 sm:grid-cols-3">
             {[
-              { n: "01", title: "Найди", desc: "Ищи по описанию или выбирай из категорий." },
-              { n: "02", title: "Исказь", desc: "Примени пресет — замедли, добавь шум плёнки или пусти в реверс." },
-              { n: "03", title: "Скачай", desc: "Собери микс из 3 дорожек и скачай .m4a." },
+              { n: "01", title: "Найди", desc: "Опиши звук словами или выбери из категорий — без переслушивания сотен файлов." },
+              { n: "02", title: "Исказь", desc: "Один клик: Lo-fi, «Страшно» или «Ностальгия» — без Audacity и Ableton." },
+              { n: "03", title: "Смиксуй", desc: "До 3 дорожек в браузере, скачай .m4a и отдай в проект или Reels." },
             ].map((item) => (
               <div key={item.n} className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="font-heading text-4xl font-bold" style={{ color: "var(--color-brand-amber)" }}>
-                    {item.n}
-                  </span>
-                  <Separator className="flex-1" />
-                </div>
+                <span className="font-heading text-4xl font-extrabold text-brand-amber">{item.n}</span>
                 <h3 className="font-heading text-xl font-semibold">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </div>
@@ -359,62 +325,67 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="relative overflow-hidden px-4 md:px-8 py-20 md:py-28">
-        {/* Warm gradient background */}
+      {/* Mixer band — violet zone */}
+      <section className="relative overflow-hidden bg-brand-black px-4 md:px-8 py-20 text-[#EDEDEF]">
         <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(145deg, #FDF6EE 0%, #FCEBD4 20%, #F8C86C 45%, #F2994A 65%, #E8643A 85%, #D94E3B 100%)",
-          }}
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(124, 92, 255, 0.25) 0%, transparent 65%)" }}
         />
-        <div
-          className="absolute"
-          style={{
-            width: 500,
-            height: 400,
-            left: "50%",
-            top: "20%",
-            transform: "translateX(-50%)",
-            borderRadius: "45% 55% 60% 40% / 50% 40% 60% 50%",
-            filter: "blur(80px)",
-            opacity: 0.4,
-            pointerEvents: "none",
-            background: "radial-gradient(ellipse at center, #FFD700 0%, #F2C94C 40%, transparent 75%)",
-          }}
-        />
-        {/* Grain */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-25 mix-blend-multiply"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundSize: "128px 128px",
-          }}
-        />
-        <div className="relative z-10 mx-auto max-w-7xl flex flex-col items-center text-center gap-6">
-          <Headphones className="h-8 w-8" style={{ color: "rgba(15,15,18,0.4)" }} />
-          <h2 className="font-heading text-3xl font-bold md:text-5xl max-w-lg" style={{ color: "#0F0F12" }}>
-            Начни слушать прямо сейчас
-          </h2>
-          <p className="max-w-sm" style={{ color: "rgba(15,15,18,0.55)" }}>
-            Открой, найди, смиксуй и скачай
+        <div className="relative z-10 mx-auto max-w-7xl text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-brand-violet mb-4">
+            Диджей-пульт для забытых звуков
           </p>
-          <div className="flex gap-3">
-            <Button
-              size="lg"
-              onClick={() => navigate("/search")}
-              className="gap-2 rounded-full bg-brand-black text-paper hover:bg-brand-black/90"
-            >
-              <ArrowRight className="h-4 w-4" />
-              Открыть архив
+          <h2 className="font-heading text-3xl font-extrabold md:text-5xl tracking-tight mb-4">
+            Попробуй микшер
+          </h2>
+          <p className="mx-auto max-w-md text-[#EDEDEF]/65 mb-8">
+            Добавь звук → крути пресет → скачай. Момент «ага!» за 60 секунд.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {["Lo-fi", "Страшно", "Ностальгия"].map((p, i) => (
+              <span
+                key={p}
+                className={`font-mono text-xs px-4 py-2 rounded-full border ${
+                  i === 0
+                    ? "border-brand-violet bg-brand-violet/20 text-white"
+                    : "border-white/15 bg-white/5 text-[#EDEDEF]/80"
+                }`}
+              >
+                {p}
+              </span>
+            ))}
+          </div>
+          <Button
+            size="lg"
+            className="rounded-full gap-2 bg-brand-violet text-white hover:bg-brand-violet/90 shadow-lg shadow-brand-violet/30"
+            onClick={() => navigate("/mixer")}
+          >
+            Открыть микшер
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="px-4 md:px-8 py-20 text-center border-t border-border">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <h2 className="font-heading text-3xl font-extrabold md:text-4xl tracking-tight">
+            Начни с одного звука
+          </h2>
+          <p className="text-muted-foreground">Бесплатно. Без регистрации. Для учебных проектов и Reels.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button size="lg" className="rounded-full gap-2" onClick={randomSound}>
+              <Shuffle className="h-4 w-4" />
+              Случайный звук
             </Button>
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate("/mixer")}
-              className="gap-2 rounded-full border-brand-black/30 text-brand-black/80 hover:bg-brand-black/5"
+              className="rounded-full gap-2"
+              onClick={() => navigate("/search")}
             >
-              Микшер
+              Открыть архив
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>

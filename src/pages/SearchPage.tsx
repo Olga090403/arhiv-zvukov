@@ -17,13 +17,18 @@ export default function SearchPage() {
 
   const initialQ = params.get("q") ?? "";
   const [query, setQuery] = useState(initialQ);
-  const [activeCategory, setActiveCategory] = useState("Все");
+  const [activeCategory, setActiveCategory] = useState(params.get("category") ?? "Все");
   const [sounds, setSounds] = useState<DbSound[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setQuery(initialQ);
+    const cat = params.get("category");
+    if (cat) setActiveCategory(cat);
+  }, [initialQ, params]);
+
+  useEffect(() => {
     fetchSounds(initialQ, activeCategory);
   }, [initialQ, activeCategory]);
 

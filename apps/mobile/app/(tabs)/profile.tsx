@@ -37,7 +37,7 @@ export default function ProfileScreen() {
       <GradientBackground />
       <View style={styles.avatarSection}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={40} color={colors.bg.paper} />
+          <Ionicons name="person" size={40} color={colors.text.secondary} />
         </View>
         <Text style={styles.name}>{user?.email ?? "—"}</Text>
         <Text style={styles.plan}>Аккаунт подключён</Text>
@@ -85,7 +85,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(255, 255, 255, 0.72)",
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: spacing.md,
@@ -102,8 +104,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   menu: {
-    backgroundColor: "rgba(255, 255, 255, 0.72)",
+    backgroundColor: colors.card,
     borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
     overflow: "hidden",
   },
   menuItem: {

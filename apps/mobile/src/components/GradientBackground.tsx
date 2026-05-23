@@ -1,58 +1,40 @@
 import { View, StyleSheet, type ViewStyle } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { gradients } from "../theme";
+import { colors } from "../theme";
 
 type Props = {
   style?: ViewStyle;
 };
 
+/** Warm paper background with subtle amber glow — §10 design */
 export function GradientBackground({ style }: Props) {
   return (
-    <View style={[StyleSheet.absoluteFill, style]} pointerEvents="none">
-      <LinearGradient
-        colors={gradients.warm.colors}
-        locations={gradients.warm.locations}
-        start={gradients.warm.start}
-        end={gradients.warm.end}
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={styles.amberBlob} />
-      <View style={styles.pinkBlob} />
+    <View style={[StyleSheet.absoluteFill, styles.paper, style]} pointerEvents="none">
+      <View style={styles.amberGlow} />
     </View>
   );
 }
 
 export function GradientHeaderBackground() {
-  return (
-    <LinearGradient
-      colors={gradients.warm.colors}
-      locations={gradients.warm.locations}
-      start={gradients.warm.start}
-      end={gradients.warm.end}
-      style={StyleSheet.absoluteFill}
-    />
-  );
+  return <View style={[StyleSheet.absoluteFill, styles.paperHeader]} />;
 }
 
 const styles = StyleSheet.create({
-  amberBlob: {
-    position: "absolute",
-    width: 280,
-    height: 240,
-    right: -40,
-    top: "12%",
-    borderRadius: 999,
-    backgroundColor: "#F2C94C",
-    opacity: 0.35,
+  paper: {
+    backgroundColor: colors.bg.paper,
   },
-  pinkBlob: {
+  paperHeader: {
+    backgroundColor: colors.bg.paper,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  amberGlow: {
     position: "absolute",
-    width: 200,
-    height: 180,
-    left: "8%",
-    bottom: "8%",
+    width: 320,
+    height: 280,
+    right: -60,
+    top: "8%",
     borderRadius: 999,
-    backgroundColor: "#FFB88C",
-    opacity: 0.25,
+    backgroundColor: colors.brand.amber,
+    opacity: 0.12,
   },
 });

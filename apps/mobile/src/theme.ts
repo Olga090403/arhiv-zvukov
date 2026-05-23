@@ -1,12 +1,3 @@
-export const gradients = {
-  warm: {
-    colors: ["#FDF6EE", "#FCEBD4", "#F8C86C", "#F2994A", "#E8643A", "#D94E3B"],
-    locations: [0, 0.2, 0.45, 0.65, 0.85, 1],
-    start: { x: 0.21, y: 0.91 },
-    end: { x: 0.79, y: 0.09 },
-  },
-};
-
 export const colors = {
   brand: {
     black: "#0F0F12",
@@ -24,7 +15,8 @@ export const colors = {
     muted: "#9A958D",
   },
   border: "#D4CFCA",
-  card: "#EEEBE2",
+  card: "#FFFFFF",
+  cardSolid: "#EEEBE2",
   destructive: "#E53935",
   success: "#43A047",
   pending: "#FB8C00",

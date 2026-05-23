@@ -54,10 +54,10 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className="shrink-0 font-heading text-sm font-bold tracking-tight hover:opacity-70 transition-opacity"
+            className="shrink-0 font-heading text-xs font-extrabold uppercase tracking-tight hover:opacity-70 transition-opacity md:text-sm"
           >
-            <span style={{ color: "var(--color-brand-amber)" }}>▶</span>
-            {" "}Архив звуков
+            Архив{" "}
+            <span className="text-brand-amber">звуков</span>
           </Link>
 
           {/* Desktop nav */}
@@ -93,13 +93,21 @@ export default function Header() {
               <span className="hidden md:inline">Выйти</span>
             </button>
           ) : (
-            <Link
-              to="/login"
-              className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <LogIn className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">Войти</span>
-            </Link>
+            <>
+              <Link
+                to="/login"
+                className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Войти</span>
+              </Link>
+              <Link
+                to="/search"
+                className="hidden sm:inline-flex h-8 items-center justify-center rounded-full bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Попробовать
+              </Link>
+            </>
           )}
 
           {/* Favorites */}
@@ -134,9 +142,8 @@ export default function Header() {
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="left" className="w-72 p-0">
           <SheetHeader className="p-5 pb-3">
-            <SheetTitle className="font-heading text-sm font-bold tracking-tight text-left">
-              <span style={{ color: "var(--color-brand-amber)" }}>▶</span>
-              {" "}Архив звуков
+            <SheetTitle className="font-heading text-xs font-extrabold uppercase tracking-tight text-left">
+              Архив <span className="text-brand-amber">звуков</span>
             </SheetTitle>
           </SheetHeader>
 

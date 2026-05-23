@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Архив звуков — найди, исказь, смиксуй</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper: #F5F1E8;
+      --paper-dark: #EEEBE2;
+      --ink: #1A1A1F;
+      --vinyl: #0F0F12;
+      --surface-dark: #16161A;
+      --card-dark: #1E1E24;
+      --amber: #F2C94C;
+      --violet: #7C5CFF;
+      --muted: #6B6860;
+      --border: #D4CFCA;
+      --text-on-dark: #EDEDEF;
+      --font-display: "Unbounded", "Space Grotesk", sans-serif;
+      --font-body: "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+      --radius: 12px;
+      --max: 1180px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.dark {
+      background: var(--surface-dark);
+      color: var(--text-on-dark);
+      --paper-dark: var(--card-dark);
+      --border: rgba(255,255,255,0.1);
+      --muted: #8E8E9A;
+    }
+
+    .grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      opacity: 0.04;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+    }
+
+    body.dark .grain { opacity: 0.06; mix-blend-mode: overlay; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    body.dark .header {
+      background: color-mix(in srgb, var(--surface-dark) 90%, transparent);
+    }
+
+    .header__inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .logo span { color: var(--amber); }
+
+    .nav {
+      display: none;
+      gap: 1.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .nav a:hover { opacity: 0.7; }
+
+    .header__actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn--ghost {
+      padding: 0.55rem 1rem;
+      background: transparent;
+      color: inherit;
+      border-radius: 999px;
+    }
+
+    .btn--ghost:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+
+    body.dark .btn--ghost:hover { background: rgba(255,255,255,0.06); }
+
+    .btn--primary {
+      padding: 0.65rem 1.25rem;
+      background: var(--amber);
+      color: var(--vinyl);
+      border-radius: 999px;
+      box-shadow: 0 4px 20px rgba(242, 201, 76, 0.35);
+    }
+
+    .btn--primary:hover {
+      box-shadow: 0 6px 28px rgba(242, 201, 76, 0.45);
+    }
+
+    .btn--outline {
+      padding: 0.65rem 1.25rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: inherit;
+    }
+
+    .btn--violet {
+      background: var(--violet);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.35);
+    }
+
+    .theme-toggle {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    @media (min-width: 768px) {
+      .nav { display: flex; }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 1.5rem 3rem;
+      min-height: min(88vh, 900px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero__glow {
+      position: absolute;
+      width: 520px;
+      height: 420px;
+      right: -8%;
+      top: 8%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(242, 201, 76, 0.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body.dark .hero__glow {
+      background: radial-gradient(ellipse, rgba(242, 201, 76, 0.12) 0%, rgba(124, 92, 255, 0.08) 40%, transparent 75%);
+    }
+
+    .hero__inner {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (min-width: 960px) {
+      .hero__inner { grid-template-columns: 1.1fr 0.9fr; }
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero__title .hl {
+      background: var(--amber);
+      color: var(--vinyl);
+      padding: 0 0.12em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    body.dark .hero__title .hl { color: var(--vinyl); }
+
+    .hero__sub {
+      font-size: 1.05rem;
+      max-width: 32rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.35rem 0.35rem 0.35rem 1.15rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      max-width: 28rem;
+      box-shadow: 0 8px 32px rgba(15, 15, 18, 0.06);
+    }
+
+    body.dark .search-bar {
+      background: var(--card-dark);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: inherit;
+      outline: none;
+      min-width: 0;
+    }
+
+    .search-bar input::placeholder { color: var(--muted); }
+
+    .hero__cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .hero__stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat__val {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .stat__lbl {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Floating cards (Suno-inspired) */
+    .hero__cards {
+      position: relative;
+      min-height: 340px;
+    }
+
+    .float-card {
+      position: absolute;
+      width: min(100%, 280px);
+      padding: 1.25rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 50px rgba(15, 15, 18, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    body.dark .float-card {
+      background: var(--card-dark);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .float-card:hover { transform: translateY(-4px) rotate(0deg) !important; }
+
+    .float-card:nth-child(1) {
+      top: 0;
+      left: 0;
+      transform: rotate(-4deg);
+      z-index: 3;
+    }
+
+    .float-card:nth-child(2) {
+      top: 48px;
+      right: 0;
+      transform: rotate(3deg);
+      z-index: 2;
+    }
+
+    .float-card:nth-child(3) {
+      bottom: 0;
+      left: 15%;
+      transform: rotate(-1.5deg);
+      z-index: 1;
+    }
+
+    .float-card__tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+
+    .float-card__title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .wave {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 48px;
+    }
+
+    .wave span {
+      flex: 1;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--ink) 12%, transparent);
+      transition: background 0.2s, height 0.15s;
+    }
+
+    body.dark .wave span { background: rgba(255,255,255,0.12); }
+
+    .float-card.playing .wave span { background: var(--amber); }
+
+    body.dark .float-card.playing .wave span { background: var(--amber); }
+
+    .float-card__play {
+      margin-top: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font-body);
+      padding: 0;
+    }
+
+    .float-card__play:hover { color: var(--ink); }
+    body.dark .float-card__play:hover { color: var(--text-on-dark); }
+
+    /* ── Marquee ── */
+    .marquee-wrap {
+      border-block: 1px solid var(--border);
+      background: var(--paper-dark);
+      overflow: hidden;
+      padding: 1rem 0;
+    }
+
+    body.dark .marquee-wrap { background: var(--card-dark); }
+
+    .marquee {
+      display: flex;
+      width: max-content;
+      animation: scroll 28s linear infinite;
+    }
+
+    .marquee span {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      padding: 0 1.25rem;
+      white-space: nowrap;
+      color: color-mix(in srgb, var(--ink) 12%, transparent);
+    }
+
+    body.dark .marquee span { color: rgba(255,255,255,0.12); }
+
+    .marquee span.dot { color: var(--amber); opacity: 1; }
+
+    @keyframes scroll {
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── Sections ── */
+    .section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+
+    .section__label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+    }
+
+    /* Categories grid (Epidemic-inspired layout, archive tone) */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .cat {
+      padding: 1.25rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    body.dark .cat { background: var(--card-dark); }
+
+    .cat:hover {
+      border-color: var(--amber);
+      transform: translateY(-2px);
+    }
+
+    .cat__icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+
+    .cat__name {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .steps { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .step__num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .step__title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step__desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* Mixer CTA band — violet zone */
+    .mixer-band {
+      background: var(--vinyl);
+      color: var(--text-on-dark);
+      padding: 4rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.dark .mixer-band { background: #0a0a0d; }
+
+    .mixer-band__glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(124, 92, 255, 0.25) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .mixer-band__inner {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .mixer-band__label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 1rem;
+    }
+
+    .mixer-band h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .mixer-band p {
+      color: rgba(237, 237, 239, 0.65);
+      max-width: 28rem;
+      margin: 0 auto 1.75rem;
+    }
+
+    .preset-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .preset {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: rgba(237,237,239,0.8);
+    }
+
+    .preset--active {
+      border-color: var(--violet);
+      background: rgba(124, 92, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      text-align: center;
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-cta h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-cta p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    footer {
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    footer .logo { display: inline-block; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="header__inner">
+      <a href="#" class="logo">Архив <span>звуков</span></a>
+      <nav class="nav" aria-label="Основная">
+        <a href="#catalog">Каталог</a>
+        <a href="#how">Как работает</a>
+        <a href="#mixer">Микшер</a>
+        <a href="#upload">Загрузить</a>
+      </nav>
+      <div class="header__actions">
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Переключить тему">☀</button>
+        <button class="btn btn--ghost" type="button">Войти</button>
+        <button class="btn btn--primary" type="button">Попробовать</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">Бесплатно · без регистрации · CC0</p>
+          <h1 class="hero__title">
+            Забытые<br />
+            <span class="hl">звуки</span><br />
+            живут здесь
+          </h1>
+          <p class="hero__sub">
+            Найди «скрип снега под валенком», искази пресетом Lo-fi и собери микс за&nbsp;2&nbsp;минуты — прямо в браузере.
+          </p>
+
+          <form class="search-bar" role="search" onsubmit="return false;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+            <input type="search" placeholder="жужжание лампы, метро 80-х, скрип снега…" aria-label="Поиск звука" />
+            <button class="btn btn--primary" type="submit">Найти</button>
+          </form>
+
+          <div class="hero__cta-row">
+            <button class="btn btn--outline" type="button" id="randomBtn">↻ Случайный звук</button>
+          </div>
+
+          <div class="hero__stats">
+            <div>
+              <div class="stat__val">48</div>
+              <div class="stat__lbl">звуков в архиве</div>
+            </div>
+            <div>
+              <div class="stat__val">3</div>
+              <div class="stat__lbl">пресета</div>
+            </div>
+            <div>
+              <div class="stat__val">0 ₽</div>
+              <div class="stat__lbl">на старте</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__cards" aria-label="Примеры звуков">
+          <article class="float-card" data-sound="0">
+            <div class="float-card__tag">полевая запись</div>
+            <div class="float-card__title">Скрип снега под валенком</div>
+            <div class="wave" aria-hidden="true"></div>
+            <button class="float-card__play" type="button">▶ Слушать</button>
+          </article>
+          <article class="float-card" data-sound="1">
+            <div class="float-card__tag">атмосфера</div>
+            <div class="float-card__title">Гудок метро 80-х</div>
+            <div class="wave" aria-hidden="true"></div>
+            <button class="float-card__play" type="button">▶ Слушать</button>
+          </article>
+          <article class="float-card" data-sound="2">
+            <div class="float-card__tag">бытовое</div>
+            <div class="float-card__title">Жужжание старой лампы</div>
+            <div class="wave" aria-hidden="true"></div>
+            <button class="float-card__play" type="button">▶ Слушать</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee-wrap" aria-hidden="true">
+      <div class="marquee" id="marquee"></div>
+    </div>
+
+    <section class="section" id="catalog">
+      <p class="section__label">Каталог</p>
+      <h2 class="section__title">Исчезающие звуки по категориям</h2>
+      <div class="cat-grid">
+        <div class="cat"><div class="cat__icon">❄</div><div class="cat__name">Зима</div></div>
+        <div class="cat"><div class="cat__icon">🚇</div><div class="cat__name">Город</div></div>
+        <div class="cat"><div class="cat__icon">💡</div><div class="cat__name">Быт</div></div>
+        <div class="cat"><div class="cat__icon">🌧</div><div class="cat__name">Дождь</div></div>
+        <div class="cat"><div class="cat__icon">📼</div><div class="cat__name">Ретро</div></div>
+        <div class="cat"><div class="cat__icon">🌙</div><div class="cat__name">Ночь</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <p class="section__label">Как это работает</p>
+      <h2 class="section__title">От поиска до микса за 2 минуты</h2>
+      <div class="steps">
+        <article>
+          <div class="step__num">01</div>
+          <h3 class="step__title">Найди</h3>
+          <p class="step__desc">Опиши звук словами или выбери из категорий — без переслушивания сотен файлов.</p>
+        </article>
+        <article>
+          <div class="step__num">02</div>
+          <h3 class="step__title">Исказь</h3>
+          <p class="step__desc">Один клик: Lo-fi, «Страшно» или «Ностальгия» — без Audacity и Ableton.</p>
+        </article>
+        <article>
+          <div class="step__num">03</div>
+          <h3 class="step__title">Смиксуй</h3>
+          <p class="step__desc">До 3 дорожек в браузере, скачай .m4a и отдай в проект или Reels.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="mixer-band" id="mixer">
+      <div class="mixer-band__glow" aria-hidden="true"></div>
+      <div class="mixer-band__inner">
+        <p class="mixer-band__label">Диджей-пульт для забытых звуков</p>
+        <h2>Попробуй микшер</h2>
+        <p>Добавь звук → крути пресет → скачай. Момент «ага!» за 60 секунд.</p>
+        <div class="preset-pills">
+          <span class="preset preset--active">Lo-fi</span>
+          <span class="preset">Страшно</span>
+          <span class="preset">Ностальгия</span>
+        </div>
+        <button class="btn btn--primary btn--violet" type="button">Открыть микшер</button>
+      </div>
+    </section>
+
+    <section class="footer-cta">
+      <h2>Начни с одного звука</h2>
+      <p>Бесплатно. Без регистрации. Для учебных проектов и Reels.</p>
+      <button class="btn btn--primary" type="button">↻ Случайный звук</button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="logo">Архив <span>звуков</span></div>
+    <p>Кураторский архив исчезающих звуков · MVP preview · §10 design</p>
+  </footer>
+
+  <script>
+    const MARQUEE = [
+      "СКРИП СНЕГА", "✦", "МЕТРО 80-х", "✦", "СТАРАЯ ЛАМПА", "✦",
+      "НОЧНОЙ ТРАМВАЙ", "✦", "ПИШУЩАЯ МАШИНКА", "✦", "КОФЕВАРКА", "✦",
+    ];
+
+    const marqueeEl = document.getElementById("marquee");
+    const items = [...MARQUEE, ...MARQUEE];
+    items.forEach((text) => {
+      const s = document.createElement("span");
+      s.textContent = text;
+      if (text === "✦") s.classList.add("dot");
+      marqueeEl.appendChild(s);
+    });
+
+    function buildWave(container, seed) {
+      container.innerHTML = "";
+      for (let i = 0; i < 40; i++) {
+        const bar = document.createElement("span");
+        const h = 20 + Math.sin(i * 0.45 + seed) * 28 + Math.cos(i * 0.25 + seed * 2) * 12;
+        bar.style.height = Math.max(12, h) + "%";
+        container.appendChild(bar);
+      }
+    }
+
+    document.querySelectorAll(".float-card").forEach((card, idx) => {
+      buildWave(card.querySelector(".wave"), idx * 1.7);
+      const btn = card.querySelector(".float-card__play");
+      let playing = false;
+      let interval;
+
+      btn.addEventListener("click", () => {
+        playing = !playing;
+        card.classList.toggle("playing", playing);
+        btn.textContent = playing ? "■ Стоп" : "▶ Слушать";
+
+        clearInterval(interval);
+        if (playing) {
+          interval = setInterval(() => {
+            card.querySelectorAll(".wave span").forEach((bar, i) => {
+              const h = 15 + Math.random() * 55 + Math.sin(Date.now() / 200 + i) * 20;
+              bar.style.height = h + "%";
+            });
+          }, 120);
+        } else {
+          buildWave(card.querySelector(".wave"), idx * 1.7);
+        }
+      });
+    });
+
+    document.getElementById("randomBtn").addEventListener("click", () => {
+      const cards = document.querySelectorAll(".float-card");
+      const pick = cards[Math.floor(Math.random() * cards.length)];
+      pick.scrollIntoView({ behavior: "smooth", block: "center" });
+      pick.querySelector(".float-card__play").click();
+    });
+
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      themeToggle.textContent = document.body.classList.contains("dark") ? "☾" : "☀";
+    });
+  </script>
+</body>
+</html>
