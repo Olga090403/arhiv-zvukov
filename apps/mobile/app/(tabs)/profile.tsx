@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import { colors, fonts, spacing, radius } from "../../src/theme";
 import { useAuth } from "../../src/lib/useAuth";
 import { supabase } from "../../src/lib/supabase";
+import { GradientBackground } from "../../src/components/GradientBackground";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
+      <GradientBackground />
       <View style={styles.avatarSection}>
         <View style={styles.avatar}>
           <Ionicons name="person" size={40} color={colors.bg.paper} />
@@ -73,7 +75,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg.paper,
     paddingHorizontal: spacing.lg,
   },
   avatarSection: {
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: spacing.md,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   menu: {
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.lg,
     overflow: "hidden",
   },

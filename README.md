@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# Архив звуков
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-клиент «Архив звуков» — React + TypeScript + Vite + Supabase.
 
-Currently, two official plugins are available:
+## Локальный запуск
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.example .env.local   # заполните реальными значениями
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Приложение откроется на `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Deploy
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Продакшен-сборка — статический SPA (Vercel, Netlify или любой static host).
+
+### Команда сборки
+
+```bash
+npm run build
 ```
+
+Артефакты попадают в папку `dist/`.
+
+### Переменные окружения
+
+Скопируйте `.env.example` → `.env.local` локально или задайте переменные в панели хостинга (префикс `VITE_` обязателен — Vite встраивает их на этапе build).
+
+| Переменная | Обязательна | Описание |
+|---|---|---|
+| `VITE_SUPABASE_URL` | да | URL проекта Supabase |
+| `VITE_SUPABASE_ANON_KEY` | да | Anon/public key Supabase |
+| `VITE_DO_SPACES_ENDPOINT` | нет | Endpoint DigitalOcean Spaces |
+| `VITE_DO_SPACES_BUCKET` | нет | Имя bucket для аудио |
+| `VITE_DO_SPACES_KEY` | нет | Access key Spaces (client-side) |
+| `DO_SPACES_SECRET` | нет | Secret key Spaces (только server-side / Edge Function) |
+
+Файл `.env.local` не коммитится (см. `.gitignore`).
+
+### Мобильный companion (Expo)
+
+```bash
+cd apps/mobile
+npm install
+cp .env.example .env.local   # EXPO_PUBLIC_SUPABASE_*
+npx expo start
+```
+
+Переменные мобилки: `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`.

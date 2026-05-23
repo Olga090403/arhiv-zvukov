@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Play, ArrowRight, Shuffle, Headphones, ArrowDownRight } from "lucide-react";
@@ -18,7 +17,6 @@ const MARQUEE_ITEMS = [
 ];
 
 export default function LandingPage() {
-  const [query, setQuery] = useState("");
   const [sounds, setSounds] = useState<DbSound[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,12 +42,6 @@ export default function LandingPage() {
     }
     fetchFeatured();
   }, []);
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const q = query.trim();
-    navigate(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
-  }
 
   async function randomSound() {
     const { data } = await supabase

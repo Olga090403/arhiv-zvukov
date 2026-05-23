@@ -50,6 +50,7 @@ export interface Database {
           listen_count?: number;
         };
         Update: Partial<Omit<DbSound, "id" | "created_at">>;
+        Relationships: [];
       };
       uploads: {
         Row: DbUpload;
@@ -61,6 +62,7 @@ export interface Database {
           moderator_note?: string | null;
         };
         Update: Partial<Omit<DbUpload, "id" | "created_at">>;
+        Relationships: [];
       };
       users: {
         Row: DbUser;
@@ -71,7 +73,12 @@ export interface Database {
           plan?: string;
         };
         Update: Partial<Omit<DbUser, "id" | "created_at">>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }

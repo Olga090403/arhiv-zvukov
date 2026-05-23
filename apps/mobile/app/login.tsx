@@ -13,6 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../src/theme";
 import { supabase } from "../src/lib/supabase";
+import { GradientBackground } from "../src/components/GradientBackground";
 
 export default function LoginScreen() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -61,6 +62,7 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <GradientBackground />
       <View style={styles.content}>
         <View style={styles.header}>
           <View style={styles.iconWrap}>
@@ -129,7 +131,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg.paper,
   },
   content: {
     flex: 1,
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: spacing.sm,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 16,
     color: colors.text.primary,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 14,

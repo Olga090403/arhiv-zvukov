@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable, Linking, Alert, Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../../src/theme";
+import { GradientBackground } from "../../src/components/GradientBackground";
 
 const WEB_SEARCH_URL = "https://arhiv-zvukov.vercel.app/search";
 
@@ -45,6 +46,7 @@ export default function VoiceSearchScreen() {
 
   return (
     <View style={styles.container}>
+      <GradientBackground />
       <View style={styles.content}>
         {/* Pulse rings */}
         {listening && (
@@ -106,7 +108,6 @@ export default function VoiceSearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg.paper,
     justifyContent: "space-between",
   },
   content: {
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 16,
     color: colors.text.primary,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: 14,

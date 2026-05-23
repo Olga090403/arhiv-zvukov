@@ -23,6 +23,7 @@ export default function SoundPage() {
 
   useEffect(() => {
     if (!id) return;
+    const soundId = id;
     async function fetchSound() {
       setLoading(true);
       setError(null);
@@ -30,7 +31,7 @@ export default function SoundPage() {
       const { data, error: err } = await supabase
         .from("sounds")
         .select("*")
-        .eq("id", id)
+        .eq("id", soundId)
         .single();
 
       if (err || !data) {
@@ -48,7 +49,7 @@ export default function SoundPage() {
           .from("sounds")
           .select("*")
           .eq("status", "approved")
-          .neq("id", id)
+          .neq("id", soundId)
           .contains("tags", [data.tags[0]])
           .limit(3);
         setSimilar(sim ?? []);

@@ -8,6 +8,7 @@ import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
 import { colors } from "../src/theme";
 import { useAuth } from "../src/lib/useAuth";
 import { registerForPushNotificationsAsync } from "../src/lib/pushNotifications";
+import { GradientBackground } from "../src/components/GradientBackground";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -49,6 +50,7 @@ export default function RootLayout() {
   if (!fontsLoaded || loading) {
     return (
       <View style={styles.loader}>
+        <GradientBackground />
         <ActivityIndicator size="large" color={colors.brand.amber} />
       </View>
     );
@@ -67,6 +69,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.bg.paper,
   },
 });

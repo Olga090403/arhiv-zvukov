@@ -1,17 +1,18 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, fonts } from "../../src/theme";
+import { colors, fonts, gradients } from "../../src/theme";
+import { GradientHeaderBackground } from "../../src/components/GradientBackground";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.bg.paper },
+        headerBackground: () => <GradientHeaderBackground />,
         headerTitleStyle: { fontFamily: fonts.headingBold, fontSize: 18, color: colors.text.primary },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: colors.bg.paper,
-          borderTopColor: colors.border,
+          backgroundColor: gradients.warm.colors[0],
+          borderTopColor: "rgba(255, 255, 255, 0.35)",
           height: 88,
           paddingBottom: 28,
           paddingTop: 8,
@@ -33,6 +34,7 @@ export default function TabsLayout() {
         name="record"
         options={{
           title: "Запись",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Ionicons name="mic-outline" size={size} color={color} />,
         }}
       />

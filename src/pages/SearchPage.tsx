@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Play, Plus, Search, SearchX, ArrowRight } from "lucide-react";
+import { Play, Plus, Search, SearchX } from "lucide-react";
 import { CATEGORIES, formatDuration } from "@/lib/mockData";
 import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
@@ -48,10 +48,10 @@ export default function SearchPage() {
       setError("Не удалось загрузить звуки");
       toast.error("Ошибка загрузки");
     } else {
-      let filtered = data ?? [];
+      let filtered = (data ?? []) as DbSound[];
       if (category && category !== "Все") {
         filtered = filtered.filter((s) => s.tags.some(
-          (t) => t.toLowerCase() === category.toLowerCase()
+          (t: string) => t.toLowerCase() === category.toLowerCase()
             || mapCategory(s.tags) === category
         ));
       }

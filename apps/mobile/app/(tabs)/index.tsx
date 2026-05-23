@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../../src/theme";
 import { supabase } from "../../src/lib/supabase";
 import type { DbUpload } from "../../src/lib/database.types";
+import { GradientBackground } from "../../src/components/GradientBackground";
 
 const STATUS_CONFIG = {
   pending: { label: "На модерации", color: colors.pending, icon: "time-outline" as const },
@@ -67,6 +68,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <GradientBackground />
       <FlatList
         data={uploads}
         keyExtractor={(item) => item.id}
@@ -123,7 +125,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg.paper,
   },
   list: {
     padding: spacing.md,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
   },
   uploadCard: {
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.sm,

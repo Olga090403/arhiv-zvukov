@@ -7,6 +7,7 @@ import * as FileSystem from "expo-file-system";
 import { colors, fonts, spacing, radius } from "../src/theme";
 import { supabase } from "../src/lib/supabase";
 import { useAuth } from "../src/lib/useAuth";
+import { GradientBackground } from "../src/components/GradientBackground";
 
 export default function ConfirmScreen() {
   const router = useRouter();
@@ -134,7 +135,9 @@ export default function ConfirmScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.wrapper}>
+      <GradientBackground />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.heading}>Подтверждение</Text>
       <Text style={styles.subtitle}>Заполни информацию о записи</Text>
 
@@ -224,6 +227,7 @@ export default function ConfirmScreen() {
         <Text style={styles.backText}>Записать заново</Text>
       </Pressable>
     </ScrollView>
+    </View>
   );
 }
 
@@ -252,9 +256,11 @@ function decode(base64: string): Uint8Array {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.bg.paper,
   },
   content: {
     padding: spacing.lg,
@@ -277,7 +283,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.lg,
     padding: spacing.md,
     marginBottom: spacing.md,
@@ -303,7 +309,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 16,
     color: colors.text.primary,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 14,
@@ -324,7 +330,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: radius.md,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 2,
@@ -334,7 +340,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: spacing.md,
     marginTop: spacing.lg,
-    backgroundColor: colors.card,
+    backgroundColor: "rgba(255, 255, 255, 0.72)",
     borderRadius: radius.lg,
     padding: spacing.md,
   },
