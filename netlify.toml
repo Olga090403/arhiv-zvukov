@@ -2,6 +2,7 @@
   command = "npm run build"
   publish = "dist"
 
+# SPA fallback — static files in /assets are served first by Netlify
 [[redirects]]
   from = "/*"
   to = "/index.html"
