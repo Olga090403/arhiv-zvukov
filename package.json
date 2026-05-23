@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "pages:build": "npm run build",
-    "pages:preview": "wrangler pages dev dist"
+    "pages:preview": "wrangler pages dev dist",
+    "cf:deploy": "npm run build && node scripts/prepare-cf-dist.mjs && wrangler pages deploy dist --project-name=arhiv-zvukov --commit-dirty=true"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -39,6 +40,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "libsodium-wrappers": "^0.8.4",
     "tailwindcss": "^4.2.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = resolve(__dirname, "../public");
-const siteUrl = (process.env.VITE_SITE_URL ?? "https://arhiv-zvukov.netlify.app").replace(/\/$/, "");
+const siteUrl = (process.env.VITE_SITE_URL ?? "https://olga090403.github.io/arhiv-zvukov").replace(/\/$/, "");
 
 const routes = ["", "/search", "/mixer", "/upload", "/login", "/signup"];
 

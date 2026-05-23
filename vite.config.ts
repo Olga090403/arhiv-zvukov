@@ -5,9 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const siteUrl = (env.VITE_SITE_URL ?? "https://arhiv-zvukov.netlify.app").replace(/\/$/, "");
+  const siteUrl = (env.VITE_SITE_URL ?? "https://olga090403.github.io/arhiv-zvukov").replace(/\/$/, "");
+  const base = env.VITE_BASE_PATH ?? "/";
 
   return {
+    base,
     plugins: [
       react(),
       tailwindcss(),
