@@ -67,10 +67,17 @@ function FloatCard({
       <div className="mt-3">
         <WaveformBars seed={index * 1.7} />
       </div>
-      <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-brand-black/70 group-hover:text-brand-orange">
+      <button
+        type="button"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border-2 border-white/80 bg-white px-4 py-2 text-xs font-bold text-brand-black shadow-md transition-all group-hover:shadow-lg group-hover:brightness-105"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+      >
         <Play className="h-3 w-3 fill-current" />
-        Слушать
-      </div>
+        Слушать звук
+      </button>
     </article>
   );
 }
@@ -186,11 +193,11 @@ export default function LandingPage() {
               </form>
 
               <div className="mt-4 flex flex-wrap gap-3">
-                <Button size="lg" onClick={randomSound}>
+                <Button size="lg" variant="outline" className="bg-white border-white/80 shadow-lg" onClick={randomSound}>
                   <Shuffle className="h-4 w-4" />
                   Случайный звук
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => navigate("/mixer")}>
+                <Button size="lg" onClick={() => navigate("/mixer")}>
                   Открыть микшер
                 </Button>
               </div>
@@ -347,7 +354,7 @@ export default function LandingPage() {
           <h2 className="font-heading text-3xl font-black md:text-5xl tracking-tight">Залетай в архив</h2>
           <p className="font-medium text-brand-black/60">Бесплатно · без регистрации · CC0</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button size="lg" onClick={randomSound}>
+            <Button size="lg" variant="outline" className="bg-white border-white/80 shadow-lg" onClick={randomSound}>
               <Shuffle className="h-4 w-4" />
               Случайный звук
             </Button>
