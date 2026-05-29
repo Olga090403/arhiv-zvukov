@@ -99,13 +99,24 @@
 .bg-gradient-sunset {
     background: var(--gradient-sunset);
 }
-/* Horizontal gradient — ровнее на pill-кнопках, без «полос» по бокам */
-.bg-gradient-sunset-btn,
-[data-slot="button"].bg-gradient-sunset-btn {
-    background-color: #ffb347;
-    background-image: linear-gradient(90deg, #FFE259 0%, #F2C94C 22%, #FFB347 50%, #FF8C42 78%, #FF6B35 100%);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
+/* Pill-кнопки: градиент через ::before — ровная заливка до скруглённых краёв */
+.btn-sunset-gradient {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: transparent;
+}
+.btn-sunset-gradient::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #FFE259 0%, #F2C94C 22%, #FFB347 50%, #FF8C42 78%, #FF6B35 100%);
+}
+/* Заливка под border-2 (активные чипы фильтров) */
+.btn-sunset-gradient--bleed::before {
+    inset: -2px;
 }
 .bg-gradient-hero {
     background: var(--gradient-hero);

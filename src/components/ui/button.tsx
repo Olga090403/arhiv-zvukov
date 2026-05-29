@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "overflow-hidden border-0 bg-gradient-sunset-btn text-brand-black shadow-lg shadow-brand-orange/30 hover:brightness-105",
+          "btn-sunset-gradient border-0 text-brand-black shadow-sm shadow-black/10 hover:brightness-105",
         outline:
           "border-brand-black/15 bg-white/90 text-brand-black shadow-md hover:bg-white hover:shadow-lg",
         secondary:
-          "overflow-hidden border-0 bg-gradient-sunset-btn text-brand-black shadow-md hover:brightness-105",
+          "btn-sunset-gradient border-0 text-brand-black shadow-sm shadow-black/10 hover:brightness-105",
         ghost:
           "rounded-full bg-transparent text-brand-black hover:bg-brand-black/5 shadow-none",
         destructive:

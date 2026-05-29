@@ -110,7 +110,7 @@ export default function SearchPage() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full border-2 px-4 py-2 text-sm font-semibold transition-all ${
                 activeCategory === cat
-                  ? "border-transparent bg-gradient-sunset-btn text-brand-black shadow-md"
+                  ? "border-2 border-transparent btn-sunset-gradient btn-sunset-gradient--bleed text-brand-black shadow-sm shadow-black/10"
                   : "border-brand-orange/30 bg-white text-muted-foreground hover:border-brand-orange hover:text-foreground"
               }`}
             >
