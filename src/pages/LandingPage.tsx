@@ -17,7 +17,6 @@ import {
   IconVinyl,
   IconWave,
   CATEGORY_ICONS,
-  STEP_ICONS,
   BADGE_ICONS,
 } from "@/components/DecorativeIcons";
 
@@ -354,12 +353,9 @@ export default function LandingPage() {
               { n: "01", title: "Найди", desc: t("Опиши звук словами — «скрип снега», «гудок метро»") },
               { n: "02", title: "Исказь", desc: t("Lo-fi, «Страшно» или «Ностальгия» — один клик") },
               { n: "03", title: "Смиксуй", desc: t("До 3 дорожек → скачай .m4a → в монтаж") },
-            ].map((item, i) => (
+            ].map((item) => (
               <div key={item.n} className="rounded-2xl border-2 border-white/60 bg-white/85 p-8 md:p-10 min-h-[220px] shadow-xl shadow-brand-orange/10 backdrop-blur flex flex-col items-center justify-center text-center transition-all hover:-translate-y-1 hover:bg-white hover:shadow-2xl hover:shadow-brand-orange/20">
-                <div className="flex w-full items-center justify-center gap-4 mb-4">
-                  <span className="font-heading text-3xl font-black text-gradient-sunset">{item.n}</span>
-                  {STEP_ICONS[i]}
-                </div>
+                <span className="font-heading text-3xl font-black text-gradient-sunset mb-4">{item.n}</span>
                 <h3 className="font-heading text-lg font-black">{item.title}</h3>
                 <p className="mt-3 text-sm font-medium text-brand-black/60 leading-relaxed">{item.desc}</p>
               </div>
