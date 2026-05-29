@@ -27,6 +27,8 @@ const MARQUEE_ITEMS = [
 
 const WHITE_BTN = "bg-white border-white/80 text-brand-black shadow-lg hover:bg-white hover:brightness-105";
 
+const SECTION_PY = "py-20 md:py-24";
+
 const HERO_BADGES = [
   { icon: BADGE_ICONS.free, label: "бесплатно" },
   { icon: BADGE_ICONS.noreg, label: "без регистрации" },
@@ -156,9 +158,9 @@ export default function LandingPage() {
           <IconHeadphones className="size-16" />
         </FloatingSticker>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-4 md:px-8 py-20 md:py-28 lg:py-32">
-          <div className="mx-auto grid w-full max-w-7xl items-center gap-16 lg:gap-24 lg:grid-cols-[1fr_1fr]">
-            <div className="space-y-10 max-w-xl lg:max-w-none">
+        <div className="relative z-10 flex-1 flex flex-col justify-start px-4 md:px-8 py-16 md:py-20 lg:py-20">
+          <div className="mx-auto grid w-full max-w-7xl items-start gap-12 lg:gap-20 lg:grid-cols-[1fr_1fr]">
+            <div className="space-y-8 max-w-xl lg:max-w-none">
               <div className="flex flex-wrap gap-3">
                 {HERO_BADGES.map(({ icon: Icon, label }) => (
                   <span
@@ -196,7 +198,7 @@ export default function LandingPage() {
 
               <div className="space-y-4">
                 <p className="text-lg md:text-xl font-bold text-brand-black/80 leading-relaxed max-w-lg">
-                  Тот самый вайб для Reels, монтажа и учебки — за 20 секунд
+                  Нужный звук для монтажа, клипов и учебных проектов — за 20 секунд
                 </p>
                 <p className="text-base font-medium text-brand-black/55 leading-relaxed max-w-md">
                   Редкие бытовые звуки · lo-fi пресеты · микшер прямо в браузере
@@ -246,7 +248,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="relative z-10 border-t border-brand-black/10 px-4 md:px-8 py-8 md:py-10 bg-background">
+        <div className="relative z-10 border-t border-brand-black/10 px-4 md:px-8 py-10 md:py-10 bg-background">
           <div className="mx-auto flex max-w-7xl gap-12 md:gap-20">
             {[
               { value: totalCount ?? (loading ? "…" : sounds.length), label: "звуков" },
@@ -262,14 +264,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Marquee — подтянут выше */}
-      <div className="-mt-1 overflow-hidden border-y-2 border-brand-orange/20 bg-white py-5">
+      {/* Marquee */}
+      <div className="-mt-1 overflow-hidden border-y-2 border-brand-orange/40 bg-brand-black py-5">
         <div className="animate-marquee flex whitespace-nowrap">
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span
               key={i}
               className={`mx-4 font-heading text-xl font-black md:text-3xl ${
-                item === "✦" ? "text-gradient-sunset" : "text-brand-black/10"
+                item === "✦" ? "text-white/70" : "text-white"
               }`}
             >
               {item}
@@ -279,7 +281,7 @@ export default function LandingPage() {
       </div>
 
       {/* Mobile featured */}
-      <section className="px-4 md:px-8 py-20 md:py-24 lg:hidden bg-background">
+      <section className={`px-4 md:px-8 ${SECTION_PY} lg:hidden bg-background`}>
         <div className="mx-auto max-w-7xl space-y-8">
           <div className="flex items-center gap-4">
             <IconBolt className="size-11 shrink-0" />
@@ -309,7 +311,7 @@ export default function LandingPage() {
       </section>
 
       {/* Categories */}
-      <section className="px-4 md:px-8 py-20 md:py-24 bg-background">
+      <section className={`px-4 md:px-8 ${SECTION_PY} bg-background`}>
         <div className="mx-auto max-w-7xl">
           <div className="flex items-end justify-between gap-6 mb-10">
             <div className="space-y-2">
@@ -335,7 +337,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it works — акцентный градиент между бумажными блоками */}
-      <section className="relative overflow-hidden px-4 md:px-8 py-20 md:py-24 bg-gradient-hero">
+      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-gradient-hero`}>
         <div className="pointer-events-none absolute -right-20 top-12 h-64 w-64 rounded-full bg-yellow-300/25 blur-3xl" />
         <div className="pointer-events-none absolute -left-16 bottom-8 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl" />
         <FloatingSticker className="right-6 top-10 hidden md:block">
@@ -364,7 +366,7 @@ export default function LandingPage() {
       </section>
 
       {/* Mixer CTA */}
-      <section className="relative overflow-hidden px-4 md:px-8 py-16 md:py-24 bg-brand-black text-white">
+      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-brand-black text-white`}>
         <FloatingSticker className="left-8 top-1/2 -translate-y-1/2 hidden lg:block">
           <IconVinyl className="size-20" />
         </FloatingSticker>
@@ -398,7 +400,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer CTA — бумажный фон */}
-      <section className="relative px-4 md:px-8 py-16 md:py-24 text-center bg-background overflow-hidden border-t border-brand-orange/15">
+      <section className={`relative px-4 md:px-8 ${SECTION_PY} text-center bg-background overflow-hidden border-t border-brand-orange/15`}>
         <div className="mx-auto max-w-7xl space-y-8 relative z-10">
           <IconStar className="size-12 mx-auto" />
           <h2 className="font-heading text-3xl font-black md:text-5xl tracking-tight">Залетай в архив</h2>
