@@ -108,32 +108,34 @@ export default function SoundPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-10">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors -mb-4"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Назад
-      </button>
+    <div className="mx-auto max-w-3xl space-y-8">
+      <div className="space-y-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Назад
+        </button>
 
-      <div className="flex items-center gap-3">
-        <Badge variant="outline" className="font-mono text-xs tracking-wider">
-          {sound.tags[0] ?? "звук"}
-        </Badge>
-        <Badge variant="secondary" className="font-mono text-xs">{sound.license}</Badge>
-        <span className="font-mono text-xs text-muted-foreground">
-          {sound.listen_count.toLocaleString()} прослушиваний
-        </span>
-      </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge variant="outline" className="font-mono text-xs tracking-wider">
+            {sound.tags[0] ?? "звук"}
+          </Badge>
+          <Badge variant="secondary" className="font-mono text-xs">{sound.license}</Badge>
+          <span className="font-mono text-xs text-muted-foreground">
+            {sound.listen_count.toLocaleString()} прослушиваний
+          </span>
+        </div>
 
-      <div className="space-y-3">
-        <h1 className="font-heading text-4xl font-bold leading-tight md:text-5xl">
-          {sound.title}
-        </h1>
-        {sound.description && (
-          <p className="text-lg text-muted-foreground">{sound.description}</p>
-        )}
+        <div className="space-y-3">
+          <h1 className="font-heading text-4xl font-bold leading-tight md:text-5xl">
+            {sound.title}
+          </h1>
+          {sound.description && (
+            <p className="text-lg text-muted-foreground">{sound.description}</p>
+          )}
+        </div>
       </div>
 
       {/* Waveform */}
