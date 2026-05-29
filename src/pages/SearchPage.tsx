@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Play, Plus, Search, SearchX } from "lucide-react";
+import { IconWave, IconVinyl } from "@/components/DecorativeIcons";
 import { CATEGORIES, formatDuration } from "@/lib/mockData";
 import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
@@ -71,13 +72,17 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <span className="font-mono text-xs tracking-[0.15em] uppercase text-muted-foreground">
-            Каталог
-          </span>
-          <h1 className="font-heading text-3xl font-bold md:text-4xl">
+    <div className="space-y-10">
+      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <IconVinyl className="absolute -top-2 right-0 size-12 opacity-40 hidden sm:block pointer-events-none" aria-hidden />
+        <div className="space-y-3">
+          <div className="flex items-center gap-4">
+            <IconWave className="w-14 h-6 opacity-70 hidden md:block shrink-0" aria-hidden />
+            <span className="font-mono text-xs tracking-[0.15em] uppercase text-brand-orange font-bold">
+              Каталог
+            </span>
+          </div>
+          <h1 className="font-heading text-3xl font-black md:text-4xl">
             {initialQ ? `«${initialQ}»` : "Все звуки"}
           </h1>
         </div>
@@ -104,7 +109,7 @@ export default function SearchPage() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full border-2 px-4 py-2 text-sm font-semibold transition-all ${
                 activeCategory === cat
-                  ? "border-transparent bg-gradient-sunset text-brand-black shadow-md"
+                  ? "border-transparent bg-gradient-sunset-btn text-brand-black shadow-md"
                   : "border-brand-orange/30 bg-white text-muted-foreground hover:border-brand-orange hover:text-foreground"
               }`}
             >

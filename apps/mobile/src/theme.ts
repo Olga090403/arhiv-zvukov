@@ -1,9 +1,16 @@
 export const gradients = {
   sunset: {
     colors: ["#FFE259", "#F2C94C", "#FFB347", "#FF8C42", "#FF6B35"] as const,
-    locations: [0, 0.28, 0.55, 0.78, 1] as const,
+    locations: [0, 0.22, 0.5, 0.78, 1] as const,
     start: { x: 0, y: 1 },
     end: { x: 1, y: 0 },
+  },
+  /** Горизонтальный градиент для pill-кнопок — без полос по бокам */
+  sunsetButton: {
+    colors: ["#FFE259", "#F2C94C", "#FFB347", "#FF8C42", "#FF6B35"] as const,
+    locations: [0, 0.22, 0.5, 0.78, 1] as const,
+    start: { x: 0, y: 0.5 },
+    end: { x: 1, y: 0.5 },
   },
   hero: {
     colors: ["#FFF9C4", "#FFE082", "#FFD54F", "#FFB74D", "#FF8A50", "#FF6B35"] as const,

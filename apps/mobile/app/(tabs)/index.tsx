@@ -88,10 +88,10 @@ export default function HomeScreen() {
 
             <Pressable style={styles.recordButton} onPress={() => router.push("/record")}>
               <LinearGradient
-                colors={[...gradients.sunset.colors]}
-                locations={[...gradients.sunset.locations]}
-                start={gradients.sunset.start}
-                end={gradients.sunset.end}
+                colors={[...gradients.sunsetButton.colors]}
+                locations={[...gradients.sunsetButton.locations]}
+                start={gradients.sunsetButton.start}
+                end={gradients.sunsetButton.end}
                 style={styles.recordGradient}
               >
                 <View style={styles.recordIcon}>
@@ -135,7 +135,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   list: { padding: spacing.md, gap: spacing.md },
-  hero: { marginBottom: spacing.lg },
+  hero: { marginBottom: spacing.xl, paddingVertical: spacing.md },
   eyebrow: {
     fontFamily: fonts.mono,
     fontSize: 10,
@@ -171,9 +171,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   recordGradient: {
-    padding: spacing.xl,
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.xl,
     alignItems: "center",
     gap: spacing.sm,
+    minHeight: 200,
+    justifyContent: "center",
   },
   recordIcon: {
     width: 64,
@@ -218,7 +221,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 2,
     borderColor: colors.border,
-    padding: spacing.md,
+    padding: spacing.lg,
+    minHeight: 88,
     gap: spacing.sm,
   },
   uploadHeader: {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Upload, Music2, Search, Menu, Home, Library, LogIn, LogOut } from "lucide-react";
+import { Heart, Upload, Music2, Search, Menu, Home, Library, LogIn, LogOut, Sparkles } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -54,9 +54,13 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className="shrink-0 font-heading text-sm font-black lowercase tracking-tight hover:opacity-70 transition-opacity"
+            className="shrink-0 font-heading text-sm font-black lowercase tracking-tight hover:opacity-70 transition-opacity inline-flex items-center gap-1"
           >
-            <span className="text-gradient-sunset">▶</span> архив звуков
+            <span className="text-gradient-sunset inline-flex items-center gap-0.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              ▶
+            </span>
+            архив звуков
           </Link>
 
           {/* Desktop nav */}

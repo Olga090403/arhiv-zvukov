@@ -4,16 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-full border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-brand-orange/40 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-full border text-sm font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-brand-orange/40 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-sunset text-brand-black shadow-lg shadow-brand-orange/30 hover:brightness-105",
+          "overflow-hidden border-0 bg-gradient-sunset-btn text-brand-black shadow-lg shadow-brand-orange/30 hover:brightness-105",
         outline:
           "border-brand-black/15 bg-white/90 text-brand-black shadow-md hover:bg-white hover:shadow-lg",
         secondary:
-          "bg-gradient-sunset text-brand-black shadow-md hover:brightness-105",
+          "overflow-hidden border-0 bg-gradient-sunset-btn text-brand-black shadow-md hover:brightness-105",
         ghost:
           "rounded-full bg-transparent text-brand-black hover:bg-brand-black/5 shadow-none",
         destructive:
@@ -47,7 +47,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   )
