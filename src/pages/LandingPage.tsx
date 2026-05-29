@@ -27,6 +27,8 @@ const MARQUEE_ITEMS = [
 ];
 
 const WHITE_BTN = "bg-white border-white/80 text-brand-black shadow-lg hover:bg-white hover:brightness-105";
+const DARK_SECTION_BTN =
+  "bg-white border-0 text-brand-black shadow-lg shadow-black/25 hover:bg-brand-amber hover:brightness-105";
 
 const SECTION_PY = "py-20 md:py-24";
 
@@ -338,13 +340,13 @@ export default function LandingPage() {
       </section>
 
       {/* How it works — акцентный градиент между бумажными блоками */}
-      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-gradient-hero`}>
+      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-gradient-hero flex flex-col justify-center`}>
         <div className="pointer-events-none absolute -right-20 top-12 h-64 w-64 rounded-full bg-yellow-300/25 blur-3xl" />
         <div className="pointer-events-none absolute -left-16 bottom-8 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl" />
         <FloatingSticker className="right-6 top-10 hidden md:block">
           <IconStar className="size-12" />
         </FloatingSticker>
-        <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="relative z-10 mx-auto max-w-7xl w-full text-center">
           <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand-black/55">как это работает</span>
           <h2 className="mt-2 mb-12 font-heading text-3xl font-black md:text-4xl">{t("3 шага до крутого микса")}</h2>
           <div className="grid gap-6 md:gap-8 sm:grid-cols-3">
@@ -353,8 +355,8 @@ export default function LandingPage() {
               { n: "02", title: "Исказь", desc: t("Lo-fi, «Страшно» или «Ностальгия» — один клик") },
               { n: "03", title: "Смиксуй", desc: t("До 3 дорожек → скачай .m4a → в монтаж") },
             ].map((item, i) => (
-              <div key={item.n} className="rounded-2xl border-2 border-white/60 bg-white/85 p-8 md:p-10 min-h-[220px] shadow-xl shadow-brand-orange/10 backdrop-blur flex flex-col transition-all hover:-translate-y-1 hover:bg-white hover:shadow-2xl hover:shadow-brand-orange/20">
-                <div className="flex items-center justify-between mb-4">
+              <div key={item.n} className="rounded-2xl border-2 border-white/60 bg-white/85 p-8 md:p-10 min-h-[220px] shadow-xl shadow-brand-orange/10 backdrop-blur flex flex-col items-center justify-center text-center transition-all hover:-translate-y-1 hover:bg-white hover:shadow-2xl hover:shadow-brand-orange/20">
+                <div className="flex w-full items-center justify-center gap-4 mb-4">
                   <span className="font-heading text-3xl font-black text-gradient-sunset">{item.n}</span>
                   {STEP_ICONS[i]}
                 </div>
@@ -367,14 +369,14 @@ export default function LandingPage() {
       </section>
 
       {/* Mixer CTA */}
-      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-brand-black text-white`}>
+      <section className={`relative overflow-hidden px-4 md:px-8 ${SECTION_PY} bg-brand-black text-white flex flex-col justify-center`}>
         <FloatingSticker className="left-8 top-1/2 -translate-y-1/2 hidden lg:block">
           <IconVinyl className="size-20" />
         </FloatingSticker>
         <FloatingSticker className="right-12 top-12 hidden md:block" delay="0.8s">
           <IconHeadphones className="size-16" />
         </FloatingSticker>
-        <div className="mx-auto max-w-7xl text-center relative z-10 space-y-6">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center text-center relative z-10 space-y-6">
           <IconBolt className="size-14 mx-auto" />
           <p className="font-mono text-xs font-bold uppercase tracking-widest text-brand-amber">микшер</p>
           <h2 className="font-heading text-3xl font-black md:text-5xl">Смешай свой саунд</h2>
@@ -386,14 +388,14 @@ export default function LandingPage() {
               <span
                 key={p}
                 className={`font-mono text-xs font-bold px-4 py-2 rounded-full ${
-                  i === 0 ? "bg-gradient-sunset-btn text-brand-black" : "border border-white/20 bg-white/10"
+                  i === 0 ? "bg-brand-amber text-brand-black" : "border border-white/20 bg-white/10"
                 }`}
               >
                 {p}
               </span>
             ))}
           </div>
-          <Button size="lg" onClick={() => navigate("/mixer")}>
+          <Button size="lg" variant="outline" className={DARK_SECTION_BTN} onClick={() => navigate("/mixer")}>
             Открыть микшер
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -401,8 +403,8 @@ export default function LandingPage() {
       </section>
 
       {/* Footer CTA — бумажный фон */}
-      <section className={`relative px-4 md:px-8 ${SECTION_PY} text-center bg-background overflow-hidden border-t border-brand-orange/15`}>
-        <div className="mx-auto max-w-7xl space-y-8 relative z-10">
+      <section className={`relative px-4 md:px-8 ${SECTION_PY} bg-background overflow-hidden border-t border-brand-orange/15 flex flex-col justify-center`}>
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center text-center space-y-8 relative z-10">
           <IconStar className="size-12 mx-auto" />
           <h2 className="font-heading text-3xl font-black md:text-5xl tracking-tight">{t("Залетай в архив")}</h2>
           <p className="font-medium text-brand-black/60">{t("Бесплатно · без регистрации · CC0")}</p>
