@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
 import { supabase } from "./supabase";
+import { t } from "./typography";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -16,7 +17,7 @@ export async function registerForPushNotificationsAsync(
   userId: string,
 ): Promise<string | null> {
   if (!Device.isDevice) {
-    Alert.alert("Push-уведомления работают только на реальном устройстве");
+    Alert.alert(t("Push-уведомления работают только на реальном устройстве"));
     return null;
   }
 
@@ -30,8 +31,8 @@ export async function registerForPushNotificationsAsync(
 
   if (finalStatus !== "granted") {
     Alert.alert(
-      "Уведомления отключены",
-      "Без уведомлений ты не узнаешь, когда твой звук пройдёт модерацию. Включи их в настройках.",
+      t("Уведомления отключены"),
+      t("Без уведомлений ты не узнаешь, когда твой звук пройдёт модерацию. Включи их в настройках."),
     );
     return null;
   }

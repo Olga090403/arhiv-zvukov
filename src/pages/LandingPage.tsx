@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
 import SoundCardSkeleton from "@/components/SoundCardSkeleton";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 import {
   FloatingSticker,
   IconBolt,
@@ -31,7 +32,7 @@ const SECTION_PY = "py-20 md:py-24";
 
 const HERO_BADGES = [
   { icon: BADGE_ICONS.free, label: "бесплатно" },
-  { icon: BADGE_ICONS.noreg, label: "без регистрации" },
+  { icon: BADGE_ICONS.noreg, label: t("без регистрации") },
   { icon: BADGE_ICONS.cc0, label: "CC0" },
 ];
 
@@ -111,8 +112,8 @@ export default function LandingPage() {
       ]);
 
       if (featuredRes.error) {
-        setError("Не удалось загрузить звуки");
-        toast.error("Ошибка загрузки данных");
+        setError(t("Не удалось загрузить звуки"));
+        toast.error(t("Ошибка загрузки данных"));
       } else {
         setSounds(featuredRes.data ?? []);
       }
@@ -127,7 +128,7 @@ export default function LandingPage() {
     if (data?.length) {
       navigate(`/sound/${data[Math.floor(Math.random() * data.length)].id}`);
     } else {
-      toast.error("В архиве пока нет звуков");
+      toast.error(t("В архиве пока нет звуков"));
     }
   }
 
@@ -198,10 +199,10 @@ export default function LandingPage() {
 
               <div className="space-y-4">
                 <p className="text-lg md:text-xl font-bold text-brand-black/80 leading-relaxed max-w-lg">
-                  Нужный звук для монтажа, клипов и учебных проектов — за 20 секунд
+                  {t("Нужный звук для монтажа, клипов и учебных проектов — за 20 секунд")}
                 </p>
                 <p className="text-base font-medium text-brand-black/55 leading-relaxed max-w-md">
-                  Редкие бытовые звуки · lo-fi пресеты · микшер прямо в браузере
+                  {t("Редкие бытовые звуки · lo-fi пресеты · микшер прямо в браузере")}
                 </p>
               </div>
 
@@ -287,7 +288,7 @@ export default function LandingPage() {
             <IconBolt className="size-11 shrink-0" />
             <div>
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand-orange">горячее</span>
-              <h2 className="font-heading text-2xl font-black">Послушай прямо сейчас</h2>
+              <h2 className="font-heading text-2xl font-black">{t("Послушай прямо сейчас")}</h2>
             </div>
           </div>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
@@ -316,7 +317,7 @@ export default function LandingPage() {
           <div className="flex items-end justify-between gap-6 mb-10">
             <div className="space-y-2">
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand-orange">каталог</span>
-              <h2 className="font-heading text-3xl font-black md:text-4xl">Выбирай по вайбу</h2>
+              <h2 className="font-heading text-3xl font-black md:text-4xl">{t("Выбирай по вайбу")}</h2>
             </div>
             <IconWave className="hidden sm:block w-16 opacity-60" />
           </div>
@@ -345,12 +346,12 @@ export default function LandingPage() {
         </FloatingSticker>
         <div className="relative z-10 mx-auto max-w-7xl">
           <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand-black/55">как это работает</span>
-          <h2 className="mt-2 mb-12 font-heading text-3xl font-black md:text-4xl">3 шага до крутого микса</h2>
+          <h2 className="mt-2 mb-12 font-heading text-3xl font-black md:text-4xl">{t("3 шага до крутого микса")}</h2>
           <div className="grid gap-6 md:gap-8 sm:grid-cols-3">
             {[
-              { n: "01", title: "Найди", desc: "Опиши звук словами — «скрип снега», «гудок метро»" },
-              { n: "02", title: "Исказь", desc: "Lo-fi, «Страшно» или «Ностальгия» — один клик" },
-              { n: "03", title: "Смиксуй", desc: "До 3 дорожек → скачай .m4a → в Reels или монтаж" },
+              { n: "01", title: "Найди", desc: t("Опиши звук словами — «скрип снега», «гудок метро»") },
+              { n: "02", title: "Исказь", desc: t("Lo-fi, «Страшно» или «Ностальгия» — один клик") },
+              { n: "03", title: "Смиксуй", desc: t("До 3 дорожек → скачай .m4a → в монтаж") },
             ].map((item, i) => (
               <div key={item.n} className="rounded-2xl border-2 border-white/60 bg-white/85 p-8 md:p-10 min-h-[220px] shadow-xl shadow-brand-orange/10 backdrop-blur flex flex-col transition-all hover:-translate-y-1 hover:bg-white hover:shadow-2xl hover:shadow-brand-orange/20">
                 <div className="flex items-center justify-between mb-4">
@@ -378,7 +379,7 @@ export default function LandingPage() {
           <p className="font-mono text-xs font-bold uppercase tracking-widest text-brand-amber">микшер</p>
           <h2 className="font-heading text-3xl font-black md:text-5xl">Смешай свой саунд</h2>
           <p className="mx-auto max-w-md text-white/65 font-medium leading-relaxed">
-            Добавь звук → крути пресет → скачай — идеально для pet-проектов и учёбы
+            {t("Добавь звук → крути пресет → скачай — идеально для pet-проектов и учёбы")}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {["Lo-fi", "Страшно", "Ностальгия"].map((p, i) => (
@@ -403,8 +404,8 @@ export default function LandingPage() {
       <section className={`relative px-4 md:px-8 ${SECTION_PY} text-center bg-background overflow-hidden border-t border-brand-orange/15`}>
         <div className="mx-auto max-w-7xl space-y-8 relative z-10">
           <IconStar className="size-12 mx-auto" />
-          <h2 className="font-heading text-3xl font-black md:text-5xl tracking-tight">Залетай в архив</h2>
-          <p className="font-medium text-brand-black/60">Бесплатно · без регистрации · CC0</p>
+          <h2 className="font-heading text-3xl font-black md:text-5xl tracking-tight">{t("Залетай в архив")}</h2>
+          <p className="font-medium text-brand-black/60">{t("Бесплатно · без регистрации · CC0")}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" variant="outline" onClick={randomSound}>
               <Shuffle className="h-4 w-4" />

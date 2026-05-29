@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import AuthLayout from "@/components/layout/AuthLayout";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -18,15 +19,15 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (!email.trim() || !password || !confirm) {
-      toast.error("Заполни все поля");
+      toast.error(t("Заполни все поля"));
       return;
     }
     if (password.length < 6) {
-      toast.error("Пароль — минимум 6 символов");
+      toast.error(t("Пароль — минимум 6 символов"));
       return;
     }
     if (password !== confirm) {
-      toast.error("Пароли не совпадают");
+      toast.error(t("Пароли не совпадают"));
       return;
     }
 
@@ -45,7 +46,7 @@ export default function SignupPage() {
       return;
     }
 
-    toast.success("Регистрация успешна! Проверь почту для подтверждения.");
+    toast.success(t("Регистрация успешна! Проверь почту для подтверждения."));
     navigate("/login");
   }
 
@@ -121,7 +122,7 @@ export default function SignupPage() {
       </p>
 
       <p className="mt-4 text-center text-[11px] text-muted-foreground/70">
-        Регистрация необязательна — весь архив доступен без аккаунта.
+        {t("Регистрация необязательна — весь архив доступен без аккаунта.")}
       </p>
     </AuthLayout>
   );

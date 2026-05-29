@@ -7,9 +7,10 @@ import { colors, fonts, spacing, radius, gradients } from "../../src/theme";
 import { supabase } from "../../src/lib/supabase";
 import type { DbUpload } from "../../src/lib/database.types";
 import { GradientBackground } from "../../src/components/GradientBackground";
+import { t } from "../../src/lib/typography";
 
 const STATUS_CONFIG = {
-  pending: { label: "На модерации", color: colors.pending, icon: "time-outline" as const },
+  pending: { label: t("На модерации"), color: colors.pending, icon: "time-outline" as const },
   approved: { label: "Опубликован", color: colors.success, icon: "checkmark-circle-outline" as const },
   rejected: { label: "Отклонён", color: colors.destructive, icon: "close-circle-outline" as const },
 };
@@ -57,7 +58,7 @@ export default function HomeScreen() {
       }
       setUploads((data as DbUpload[]) ?? []);
     } catch {
-      setError("Нет подключения к серверу");
+      setError(t("Нет подключения к серверу"));
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,7 @@ export default function HomeScreen() {
               <Text style={styles.eyebrow}>REELS · МОНТАЖ · PET-ПРОЕКТЫ</Text>
               <Text style={styles.heroTitle}>найди{"\n"}звук.</Text>
               <Text style={styles.heroSub}>
-                Запиши редкий бытовой звук и добавь в архив за 30 секунд
+                {t("Запиши редкий бытовой звук и добавь в архив за 30 секунд")}
               </Text>
             </View>
 
@@ -98,7 +99,7 @@ export default function HomeScreen() {
                   <Ionicons name="mic" size={32} color={colors.brand.black} />
                 </View>
                 <Text style={styles.recordTitle}>Записать звук</Text>
-                <Text style={styles.recordSubtitle}>Услышал вайб? Запиши прямо сейчас</Text>
+                <Text style={styles.recordSubtitle}>{t("Услышал вайб? Запиши прямо сейчас")}</Text>
               </LinearGradient>
             </Pressable>
 
@@ -123,7 +124,7 @@ export default function HomeScreen() {
             <View style={styles.empty}>
               <Ionicons name="cloud-upload-outline" size={48} color={colors.text.muted} />
               <Text style={styles.emptyText}>Здесь пока ничего нет</Text>
-              <Text style={styles.emptyHint}>Запиши первый звук!</Text>
+              <Text style={styles.emptyHint}>{t("Запиши первый звук!")}</Text>
             </View>
           )
         }

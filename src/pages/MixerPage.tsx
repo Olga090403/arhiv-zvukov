@@ -7,6 +7,7 @@ import { Play, Square, Download, Plus, X, Search } from "lucide-react";
 import { formatDuration } from "@/lib/mockData";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 interface Track {
   id: string;
@@ -51,11 +52,11 @@ export default function MixerPage() {
 
       setTracks((prev) => {
         if (prev.some((t) => t.id === addId)) {
-          toast.info("Этот звук уже в миксе");
+          toast.info(t("Этот звук уже в миксе"));
           return prev;
         }
         if (prev.length >= MAX_TRACKS) {
-          toast.warning(`Максимум ${MAX_TRACKS} дорожки`);
+          toast.warning(t(`Максимум ${MAX_TRACKS} дорожки`));
           return prev;
         }
         return [
@@ -83,10 +84,10 @@ export default function MixerPage() {
 
   function handleExport() {
     if (tracks.length === 0) {
-      toast.error("Добавь хотя бы один звук");
+      toast.error(t("Добавь хотя бы один звук"));
       return;
     }
-    toast.success("Экспорт .m4a — подключим в Слой 2");
+    toast.success(t("Экспорт .m4a — подключим в Слой 2"));
   }
 
   return (
@@ -109,7 +110,7 @@ export default function MixerPage() {
             <div className="space-y-1">
               <p className="font-heading text-lg font-semibold">Микс пуст</p>
               <p className="text-sm text-muted-foreground">
-                Добавь звуки из каталога, чтобы начать
+                {t("Добавь звуки из каталога, чтобы начать")}
               </p>
             </div>
             <Button variant="outline" onClick={() => navigate("/search")} className="gap-2">

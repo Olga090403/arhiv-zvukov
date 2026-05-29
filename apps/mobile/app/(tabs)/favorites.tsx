@@ -6,6 +6,7 @@ import { colors, fonts, spacing, radius } from "../../src/theme";
 import { GradientBackground } from "../../src/components/GradientBackground";
 import { useFavorites } from "../../src/lib/useFavorites";
 import { formatDuration, WEB_BASE_URL } from "../../src/lib/format";
+import { t } from "../../src/lib/typography";
 
 export default function FavoritesScreen() {
   const { favorites, loading, refresh, remove } = useFavorites();
@@ -18,7 +19,7 @@ export default function FavoritesScreen() {
 
   function openSound(id: string) {
     Linking.openURL(`${WEB_BASE_URL}/sound/${id}`).catch(() => {
-      Alert.alert("Ошибка", "Не удалось открыть браузер");
+      Alert.alert("Ошибка", t("Не удалось открыть браузер"));
     });
   }
 
@@ -65,7 +66,7 @@ export default function FavoritesScreen() {
             <View style={styles.empty}>
               <Ionicons name="heart-outline" size={48} color={colors.text.muted} />
               <Text style={styles.emptyText}>Здесь пока ничего нет</Text>
-              <Text style={styles.emptyHint}>Добавляй звуки из каталога</Text>
+              <Text style={styles.emptyHint}>{t("Добавляй звуки из каталога")}</Text>
             </View>
           )
         }

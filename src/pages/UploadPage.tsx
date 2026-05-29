@@ -28,6 +28,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import type { DbUpload } from "@/lib/database.types";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 function getSessionId(): string {
   let sid = localStorage.getItem("session_id");
@@ -141,12 +142,12 @@ export default function UploadPage() {
 
     if (error) {
       console.error("Insert error:", error);
-      toast.error("Ошибка отправки. Попробуй ещё раз.");
+      toast.error(t("Ошибка отправки. Попробуй ещё раз."));
       return;
     }
 
     setSubmitted(true);
-    toast.success("Звук отправлен на модерацию");
+    toast.success(t("Звук отправлен на модерацию"));
     fetchMyUploads();
   }
 
@@ -163,7 +164,7 @@ export default function UploadPage() {
   async function handleSaveEdit() {
     if (!editUpload) return;
     if (!editForm.title.trim()) {
-      toast.error("Название не может быть пустым");
+      toast.error(t("Название не может быть пустым"));
       return;
     }
 
@@ -191,11 +192,11 @@ export default function UploadPage() {
 
     if (error) {
       console.error("Update error:", error);
-      toast.error("Ошибка сохранения");
+      toast.error(t("Ошибка сохранения"));
       return;
     }
 
-    toast.success("Сохранено");
+    toast.success(t("Сохранено"));
     setEditUpload(null);
     fetchMyUploads();
   }
@@ -218,11 +219,11 @@ export default function UploadPage() {
 
     if (error) {
       console.error("Delete error:", error);
-      toast.error("Ошибка удаления");
+      toast.error(t("Ошибка удаления"));
       return;
     }
 
-    toast.success("Загрузка удалена");
+    toast.success(t("Загрузка удалена"));
     setDeleteUpload(null);
     setUploads((prev) => prev.filter((u) => u.id !== deleteUpload.id));
   }
@@ -239,7 +240,7 @@ export default function UploadPage() {
         <div className="relative z-10 space-y-2">
           <h2 className="font-heading text-3xl font-bold">Отправлено!</h2>
           <p className="text-muted-foreground">
-            Мы проверим звук и опубликуем в течение 24–48 часов.
+            {t("Мы проверим звук и опубликуем в течение 24–48 часов.")}
           </p>
         </div>
         <div className="relative z-10 flex gap-3">
@@ -269,7 +270,7 @@ export default function UploadPage() {
         </span>
         <h1 className="font-heading text-3xl font-bold md:text-4xl">Загрузить звук</h1>
         <p className="text-muted-foreground text-sm">
-          Поделись редкой находкой. Все загрузки проходят ручную модерацию.
+          {t("Поделись редкой находкой. Все загрузки проходят ручную модерацию.")}
         </p>
       </div>
 
@@ -367,8 +368,7 @@ export default function UploadPage() {
           <div className="space-y-1">
             <p className="text-sm font-medium">Подтверждение лицензии *</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Подтверждаю, что звук записан мной или является CC0 / CC&nbsp;BY,
-              и я передаю его сообществу на этих условиях.
+              {t("Подтверждаю, что звук записан мной или является CC0 / CC BY, и я передаю его сообществу на этих условиях.")}
             </p>
           </div>
         </label>
@@ -388,8 +388,8 @@ export default function UploadPage() {
           <h2 className="font-heading text-xl font-semibold">Мои загрузки</h2>
           <p className="text-sm text-muted-foreground">
             {user
-              ? "Загрузки привязаны к твоему аккаунту."
-              : "Загрузки привязаны к этому браузеру. Войди, чтобы управлять ими."}
+              ? t("Загрузки привязаны к твоему аккаунту.")
+              : t("Загрузки привязаны к этому браузеру. Войди, чтобы управлять ими.")}
           </p>
         </div>
 
@@ -517,8 +517,8 @@ export default function UploadPage() {
           <AlertDialogHeader>
             <AlertDialogTitle className="font-heading">Удалить загрузку?</AlertDialogTitle>
             <AlertDialogDescription>
-              «{deleteUpload?.title}» будет удалена безвозвратно.
-              Это действие нельзя отменить.
+              {deleteUpload &&
+                t(`«${deleteUpload.title}» будет удалена безвозвратно. Это действие нельзя отменить.`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

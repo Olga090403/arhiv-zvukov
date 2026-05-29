@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
 import { useFavorites } from "@/hooks/useFavorites";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 export default function SoundPage() {
   const { id } = useParams<{ id: string }>();
@@ -36,7 +37,7 @@ export default function SoundPage() {
 
       if (err || !data) {
         console.error("Supabase error:", err);
-        setError("Звук не найден");
+        setError(t("Звук не найден"));
         setLoading(false);
         return;
       }
@@ -80,7 +81,7 @@ export default function SoundPage() {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center">
         <p className="font-heading text-3xl font-bold">Звук не найден</p>
-        <p className="text-muted-foreground">Возможно, он уже исчез навсегда</p>
+        <p className="text-muted-foreground">{t("Возможно, он уже исчез навсегда")}</p>
         <Button variant="outline" onClick={() => navigate("/search")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Вернуться к поиску
@@ -94,16 +95,16 @@ export default function SoundPage() {
   function toggleFav() {
     if (favorited) {
       remove(sound!.id);
-      toast("Удалено из избранного");
+      toast(t("Удалено из избранного"));
     } else {
       add({ id: sound!.id, title: sound!.title, author: sound!.author, duration: sound!.duration });
-      toast.success("Добавлено в избранное ❤");
+      toast.success(t("Добавлено в избранное ❤"));
     }
   }
 
   function addToMixer() {
     navigate(`/mixer?add=${sound!.id}&title=${encodeURIComponent(sound!.title)}`);
-    toast.success("Звук добавлен в микшер");
+    toast.success(t("Звук добавлен в микшер"));
   }
 
   return (

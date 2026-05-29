@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts, spacing, radius } from "../src/theme";
 import { supabase } from "../src/lib/supabase";
 import { GradientBackground } from "../src/components/GradientBackground";
+import { t } from "../src/lib/typography";
 
 export default function LoginScreen() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -23,11 +24,11 @@ export default function LoginScreen() {
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Ошибка", "Введи email и пароль");
+      Alert.alert("Ошибка", t("Введи email и пароль"));
       return;
     }
     if (password.length < 6) {
-      Alert.alert("Ошибка", "Пароль минимум 6 символов");
+      Alert.alert("Ошибка", t("Пароль минимум 6 символов"));
       return;
     }
 
@@ -47,11 +48,11 @@ export default function LoginScreen() {
         if (error) {
           Alert.alert("Ошибка", error.message);
         } else {
-          Alert.alert("Готово!", "Аккаунт создан. Проверь почту для подтверждения.");
+          Alert.alert("Готово!", t("Аккаунт создан. Проверь почту для подтверждения."));
         }
       }
     } catch {
-      Alert.alert("Ошибка", "Нет подключения к серверу");
+      Alert.alert("Ошибка", t("Нет подключения к серверу"));
     } finally {
       setLoading(false);
     }
@@ -73,8 +74,8 @@ export default function LoginScreen() {
           </Text>
           <Text style={styles.subtitle}>
             {mode === "login"
-              ? "Войди, чтобы сохранить загрузки в аккаунт"
-              : "Создай аккаунт для синхронизации загрузок"}
+              ? t("Войди, чтобы сохранить загрузки в аккаунт")
+              : t("Создай аккаунт для синхронизации загрузок")}
           </Text>
         </View>
 

@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 import type { DbSound } from "@/lib/database.types";
 import SoundCardSkeleton from "@/components/SoundCardSkeleton";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
@@ -51,8 +52,8 @@ export default function SearchPage() {
 
     if (err) {
       console.error("Supabase error:", err);
-      setError("Не удалось загрузить звуки");
-      toast.error("Ошибка загрузки");
+      setError(t("Не удалось загрузить звуки"));
+      toast.error(t("Ошибка загрузки"));
     } else {
       let filtered = (data ?? []) as DbSound[];
       if (category && category !== "Все") {
@@ -227,7 +228,7 @@ export default function SearchPage() {
           <div className="space-y-2">
             <p className="font-heading text-xl font-bold">Ничего не найдено</p>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Попробуй другой запрос или сбрось фильтры.
+              {t("Попробуй другой запрос или сбрось фильтры.")}
             </p>
           </div>
           <Button variant="outline" onClick={() => { setParams({}); setActiveCategory("Все"); }}>

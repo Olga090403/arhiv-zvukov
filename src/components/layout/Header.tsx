@@ -9,6 +9,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 import FavoritesDrawer from "./FavoritesDrawer";
 
 export default function Header() {
@@ -21,7 +22,7 @@ export default function Header() {
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    toast.success("Вы вышли из аккаунта");
+    toast.success(t("Вы вышли из аккаунта"));
     navigate("/");
     setMenuOpen(false);
   }

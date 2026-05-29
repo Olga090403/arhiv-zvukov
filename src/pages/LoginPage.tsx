@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import AuthLayout from "@/components/layout/AuthLayout";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { t } from "@/lib/typography";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim() || !password) {
-      toast.error("Заполни все поля");
+      toast.error(t("Заполни все поля"));
       return;
     }
 
@@ -33,7 +34,7 @@ export default function LoginPage() {
       console.error("Login error:", error);
       toast.error(
         error.message === "Invalid login credentials"
-          ? "Неверный email или пароль"
+          ? t("Неверный email или пароль")
           : error.message
       );
       return;
@@ -99,7 +100,7 @@ export default function LoginPage() {
       </p>
 
       <p className="mt-4 text-center text-[11px] text-muted-foreground/70">
-        Вход необязателен — весь архив доступен без регистрации.
+        {t("Вход необязателен — весь архив доступен без регистрации.")}
       </p>
     </AuthLayout>
   );

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { typograf as t } from "@/lib/typography";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -55,11 +56,11 @@ export default function AuthLayout({ children, heading, subheading }: AuthLayout
               Ты можешь
             </p>
             <h2 className="font-heading text-2xl font-bold leading-tight text-brand-black/80 lg:text-3xl">
-              Открыть личный
+              {t("Открыть личный")}
               <br />
-              архив забытых
+              {t("архив забытых")}
               <br />
-              звуков мира
+              {t("звуков мира")}
             </h2>
           </div>
         </div>
@@ -75,10 +76,10 @@ export default function AuthLayout({ children, heading, subheading }: AuthLayout
           </div>
 
           <h1 className="font-heading text-2xl font-bold sm:text-3xl">
-            {heading}
+            {t(heading)}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-            {subheading}
+            {t(subheading)}
           </p>
 
           <div className="mt-8">

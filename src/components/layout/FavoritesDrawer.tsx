@@ -5,6 +5,7 @@ import { Heart, Trash2, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "@/hooks/useFavorites";
 import { formatDuration } from "@/lib/mockData";
+import { t } from "@/lib/typography";
 
 interface Props {
   open: boolean;
@@ -42,7 +43,7 @@ export default function FavoritesDrawer({ open, onOpenChange }: Props) {
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <Heart className="h-8 w-8 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground">
-                Пока пусто. Нажми ❤ на странице звука, чтобы добавить.
+                {t("Пока пусто. Нажми ❤ на странице звука, чтобы добавить.")}
               </p>
             </div>
           ) : (

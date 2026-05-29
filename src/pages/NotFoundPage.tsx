@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { t } from "@/lib/typography";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
@@ -19,8 +20,7 @@ export default function NotFoundPage() {
         <div className="space-y-2">
           <h1 className="font-heading text-2xl font-bold">Страница не найдена</h1>
           <p className="text-muted-foreground max-w-sm mx-auto">
-            Этот звук, кажется, совсем исчез.
-            Попробуй вернуться на главную или воспользуйся поиском.
+            {t("Этот звук, кажется, совсем исчез. Попробуй вернуться на главную или воспользуйся поиском.")}
           </p>
         </div>
         <div className="flex justify-center gap-3">
