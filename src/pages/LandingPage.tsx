@@ -282,18 +282,18 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Mobile featured */}
-      <section className={`px-4 md:px-8 ${SECTION_PY} lg:hidden bg-background`}>
+      {/* Featured */}
+      <section className={`px-4 md:px-8 ${SECTION_PY} bg-background`}>
         <div className="mx-auto max-w-7xl space-y-8">
           <div className="flex items-center gap-4">
             <IconBolt className="size-11 shrink-0" />
             <div>
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand-orange">горячее</span>
-              <h2 className="font-heading text-2xl font-black">{t("Послушай прямо сейчас")}</h2>
+              <h2 className="font-heading text-2xl font-black md:text-3xl lg:text-4xl">{t("Послушай прямо сейчас")}</h2>
             </div>
           </div>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
-          <div className="grid gap-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {loading
               ? Array.from({ length: 3 }).map((_, i) => <SoundCardSkeleton key={i} />)
               : sounds.map((sound) => (
