@@ -1,22 +1,38 @@
+export const gradients = {
+  sunset: {
+    colors: ["#FFE259", "#F2C94C", "#FFB347", "#FF8C42", "#FF6B35"] as const,
+    locations: [0, 0.28, 0.55, 0.78, 1] as const,
+    start: { x: 0, y: 1 },
+    end: { x: 1, y: 0 },
+  },
+  hero: {
+    colors: ["#FFF9C4", "#FFE082", "#FFD54F", "#FFB74D", "#FF8A50", "#FF6B35"] as const,
+    locations: [0, 0.18, 0.38, 0.58, 0.78, 1] as const,
+    start: { x: 0.2, y: 1 },
+    end: { x: 0.8, y: 0 },
+  },
+};
+
 export const colors = {
   brand: {
     black: "#0F0F12",
     amber: "#F2C94C",
+    orange: "#FF6B35",
     violet: "#7C5CFF",
   },
   bg: {
-    paper: "#F5F1E8",
+    paper: "#FFF8ED",
     dark: "#16161A",
   },
   text: {
-    primary: "#1A1A1F",
-    secondary: "#6B6860",
+    primary: "#0F0F12",
+    secondary: "#5C5348",
     light: "#EDEDEF",
-    muted: "#9A958D",
+    muted: "#8A7F72",
   },
-  border: "#D4CFCA",
+  border: "#FFD699",
   card: "#FFFFFF",
-  cardSolid: "#EEEBE2",
+  cardSolid: "#FFF0D4",
   destructive: "#E53935",
   success: "#43A047",
   pending: "#FB8C00",

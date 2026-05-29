@@ -102,10 +102,10 @@ export default function SearchPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
+              className={`rounded-full border-2 px-4 py-2 text-sm font-semibold transition-all ${
                 activeCategory === cat
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                  ? "border-transparent bg-gradient-sunset text-brand-black shadow-md"
+                  : "border-brand-orange/30 bg-white text-muted-foreground hover:border-brand-orange hover:text-foreground"
               }`}
             >
               {cat}

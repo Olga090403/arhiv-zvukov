@@ -17,7 +17,7 @@ export default function TabsLayout() {
           paddingBottom: 28,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: colors.brand.amber,
+        tabBarActiveTintColor: colors.brand.orange,
         tabBarInactiveTintColor: colors.text.muted,
         tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 11 },
       }}
@@ -26,7 +26,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Главная",
-          headerTitle: "Архив звуков",
+          headerTitle: "▶ архив звуков",
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
         }}
       />

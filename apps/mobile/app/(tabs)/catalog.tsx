@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.brand.black,
+    backgroundColor: colors.brand.orange,
     justifyContent: "center",
     alignItems: "center",
     marginRight: spacing.sm,
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
   },
   chipActive: {
-    backgroundColor: colors.brand.black,
-    borderColor: colors.brand.black,
+    backgroundColor: colors.brand.orange,
+    borderColor: colors.brand.orange,
   },
   chipText: {
     fontFamily: fonts.bodyMedium,
@@ -276,7 +276,8 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   chipTextActive: {
-    color: colors.bg.paper,
+    color: colors.brand.black,
+    fontFamily: fonts.bodySemiBold,
   },
   resultRow: {
     flexDirection: "row",

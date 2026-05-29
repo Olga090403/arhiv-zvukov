@@ -1,40 +1,58 @@
 import { View, StyleSheet, type ViewStyle } from "react-native";
-import { colors } from "../theme";
+import { LinearGradient } from "expo-linear-gradient";
+import { gradients } from "../theme";
 
 type Props = {
   style?: ViewStyle;
 };
 
-/** Warm paper background with subtle amber glow — §10 design */
 export function GradientBackground({ style }: Props) {
   return (
-    <View style={[StyleSheet.absoluteFill, styles.paper, style]} pointerEvents="none">
-      <View style={styles.amberGlow} />
+    <View style={[StyleSheet.absoluteFill, style]} pointerEvents="none">
+      <LinearGradient
+        colors={[...gradients.hero.colors]}
+        locations={[...gradients.hero.locations]}
+        start={gradients.hero.start}
+        end={gradients.hero.end}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={styles.glowYellow} />
+      <View style={styles.glowOrange} />
     </View>
   );
 }
 
 export function GradientHeaderBackground() {
-  return <View style={[StyleSheet.absoluteFill, styles.paperHeader]} />;
+  return (
+    <LinearGradient
+      colors={[...gradients.sunset.colors]}
+      locations={[...gradients.sunset.locations]}
+      start={gradients.sunset.start}
+      end={gradients.sunset.end}
+      style={StyleSheet.absoluteFill}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
-  paper: {
-    backgroundColor: colors.bg.paper,
-  },
-  paperHeader: {
-    backgroundColor: colors.bg.paper,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  amberGlow: {
+  glowYellow: {
     position: "absolute",
-    width: 320,
-    height: 280,
-    right: -60,
-    top: "8%",
+    width: 260,
+    height: 260,
+    right: -50,
+    top: "6%",
     borderRadius: 999,
-    backgroundColor: colors.brand.amber,
-    opacity: 0.12,
+    backgroundColor: "#FFE082",
+    opacity: 0.45,
+  },
+  glowOrange: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    left: -30,
+    bottom: "10%",
+    borderRadius: 999,
+    backgroundColor: "#FF8A50",
+    opacity: 0.35,
   },
 });

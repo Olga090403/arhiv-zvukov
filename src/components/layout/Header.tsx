@@ -49,15 +49,14 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-brand-orange/20 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 md:px-8">
           {/* Logo */}
           <Link
             to="/"
-            className="shrink-0 font-heading text-xs font-extrabold uppercase tracking-tight hover:opacity-70 transition-opacity md:text-sm"
+            className="shrink-0 font-heading text-sm font-black lowercase tracking-tight hover:opacity-70 transition-opacity"
           >
-            Архив{" "}
-            <span className="text-brand-amber">звуков</span>
+            <span className="text-gradient-sunset">▶</span> архив звуков
           </Link>
 
           {/* Desktop nav */}
@@ -101,12 +100,9 @@ export default function Header() {
                 <LogIn className="h-3.5 w-3.5" />
                 <span className="hidden md:inline">Войти</span>
               </Link>
-              <Link
-                to="/search"
-                className="hidden sm:inline-flex h-8 items-center justify-center rounded-full bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
+              <Button size="sm" className="hidden sm:inline-flex" onClick={() => navigate("/search")}>
                 Попробовать
-              </Link>
+              </Button>
             </>
           )}
 
@@ -142,8 +138,8 @@ export default function Header() {
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="left" className="w-72 p-0">
           <SheetHeader className="p-5 pb-3">
-            <SheetTitle className="font-heading text-xs font-extrabold uppercase tracking-tight text-left">
-              Архив <span className="text-brand-amber">звуков</span>
+            <SheetTitle className="font-heading text-sm font-black lowercase tracking-tight text-left">
+              <span className="text-gradient-sunset">▶</span> архив звуков
             </SheetTitle>
           </SheetHeader>
 

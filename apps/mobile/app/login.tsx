@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   submitBtn: {
-    backgroundColor: colors.brand.black,
+    backgroundColor: colors.brand.orange,
     borderRadius: radius.full,
     paddingVertical: 16,
     alignItems: "center",

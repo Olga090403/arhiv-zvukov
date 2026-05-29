@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, fonts, spacing, radius } from "../../src/theme";
+import { colors, fonts, spacing, radius, gradients } from "../../src/theme";
 import { supabase } from "../../src/lib/supabase";
 import type { DbUpload } from "../../src/lib/database.types";
 import { GradientBackground } from "../../src/components/GradientBackground";
@@ -78,28 +79,27 @@ export default function HomeScreen() {
         ListHeaderComponent={
           <>
             <View style={styles.hero}>
-              <Text style={styles.eyebrow}>БЕСПЛАТНО · CC0</Text>
-              <Text style={styles.heroTitle}>
-                ЗАБЫТЫЕ{"\n"}
-                <Text style={styles.heroHighlight}>ЗВУКИ</Text>
-                {"\n"}ЖИВУТ ЗДЕСЬ
-              </Text>
+              <Text style={styles.eyebrow}>REELS · МОНТАЖ · PET-ПРОЕКТЫ</Text>
+              <Text style={styles.heroTitle}>найди{"\n"}звук.</Text>
               <Text style={styles.heroSub}>
                 Запиши редкий бытовой звук и добавь в архив за 30 секунд
               </Text>
             </View>
 
-            <Pressable
-              style={styles.recordButton}
-              onPress={() => router.push("/record")}
-            >
-              <View style={styles.recordIcon}>
-                <Ionicons name="mic" size={32} color={colors.brand.black} />
-              </View>
-              <Text style={styles.recordTitle}>Записать звук</Text>
-              <Text style={styles.recordSubtitle}>
-                Услышал интересный звук? Запиши прямо сейчас
-              </Text>
+            <Pressable style={styles.recordButton} onPress={() => router.push("/record")}>
+              <LinearGradient
+                colors={[...gradients.sunset.colors]}
+                locations={[...gradients.sunset.locations]}
+                start={gradients.sunset.start}
+                end={gradients.sunset.end}
+                style={styles.recordGradient}
+              >
+                <View style={styles.recordIcon}>
+                  <Ionicons name="mic" size={32} color={colors.brand.black} />
+                </View>
+                <Text style={styles.recordTitle}>Записать звук</Text>
+                <Text style={styles.recordSubtitle}>Услышал вайб? Запиши прямо сейчас</Text>
+              </LinearGradient>
             </Pressable>
 
             <View style={styles.sectionHeader}>
@@ -112,7 +112,7 @@ export default function HomeScreen() {
         ListEmptyComponent={
           loading ? (
             <View style={styles.empty}>
-              <ActivityIndicator size="large" color={colors.brand.amber} />
+              <ActivityIndicator size="large" color={colors.brand.orange} />
             </View>
           ) : error ? (
             <View style={styles.empty}>
@@ -133,68 +133,69 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  hero: {
-    marginBottom: spacing.lg,
-  },
+  container: { flex: 1 },
+  list: { padding: spacing.md, gap: spacing.md },
+  hero: { marginBottom: spacing.lg },
   eyebrow: {
     fontFamily: fonts.mono,
     fontSize: 10,
     letterSpacing: 2,
-    color: colors.text.muted,
+    color: colors.text.secondary,
     marginBottom: spacing.sm,
+    fontWeight: "700",
   },
   heroTitle: {
     fontFamily: fonts.headingBold,
-    fontSize: 28,
-    lineHeight: 32,
-    letterSpacing: -0.5,
+    fontSize: 40,
+    lineHeight: 42,
+    letterSpacing: -1,
     color: colors.text.primary,
+    textTransform: "lowercase",
     marginBottom: spacing.sm,
-  },
-  heroHighlight: {
-    backgroundColor: colors.brand.amber,
-    color: colors.brand.black,
   },
   heroSub: {
     fontFamily: fonts.body,
     fontSize: 14,
     color: colors.text.secondary,
     lineHeight: 20,
+    fontWeight: "500",
   },
   recordButton: {
-    backgroundColor: colors.brand.black,
     borderRadius: radius.xl,
+    overflow: "hidden",
+    marginBottom: spacing.md,
+    shadowColor: colors.brand.orange,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  recordGradient: {
     padding: spacing.xl,
     alignItems: "center",
     gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   recordIcon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.brand.amber,
+    backgroundColor: "rgba(255,255,255,0.85)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: spacing.xs,
   },
   recordTitle: {
     fontFamily: fonts.headingBold,
-    fontSize: 20,
-    color: colors.bg.paper,
+    fontSize: 22,
+    color: colors.brand.black,
   },
   recordSubtitle: {
     fontFamily: fonts.body,
     fontSize: 13,
-    color: colors.text.muted,
+    color: colors.brand.black,
+    opacity: 0.65,
     textAlign: "center",
+    fontWeight: "500",
   },
   sectionHeader: {
     flexDirection: "row",
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
   uploadCard: {
     backgroundColor: colors.card,
     borderRadius: radius.lg,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
     padding: spacing.md,
     gap: spacing.sm,
@@ -240,45 +241,17 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: radius.full,
   },
-  statusText: {
-    fontFamily: fonts.mono,
-    fontSize: 10,
-  },
+  statusText: { fontFamily: fonts.mono, fontSize: 10 },
   uploadMeta: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
     flexWrap: "wrap",
   },
-  tag: {
-    fontFamily: fonts.mono,
-    fontSize: 11,
-    color: colors.text.muted,
-  },
-  location: {
-    fontFamily: fonts.body,
-    fontSize: 11,
-    color: colors.text.muted,
-  },
-  empty: {
-    alignItems: "center",
-    gap: spacing.md,
-    paddingVertical: spacing.xxl,
-  },
-  emptyText: {
-    fontFamily: fonts.body,
-    fontSize: 14,
-    color: colors.text.muted,
-  },
-  emptyHint: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.brand.amber,
-  },
-  errorText: {
-    fontFamily: fonts.body,
-    fontSize: 14,
-    color: colors.destructive,
-    textAlign: "center",
-  },
+  tag: { fontFamily: fonts.mono, fontSize: 11, color: colors.text.muted },
+  location: { fontFamily: fonts.body, fontSize: 11, color: colors.text.muted },
+  empty: { alignItems: "center", gap: spacing.md, paddingVertical: spacing.xxl },
+  emptyText: { fontFamily: fonts.body, fontSize: 14, color: colors.text.muted },
+  emptyHint: { fontFamily: fonts.body, fontSize: 13, color: colors.brand.orange, fontWeight: "600" },
+  errorText: { fontFamily: fonts.body, fontSize: 14, color: colors.destructive, textAlign: "center" },
 });
