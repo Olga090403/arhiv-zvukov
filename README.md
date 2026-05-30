@@ -2,7 +2,7 @@
 
 Веб-клиент «Архив звуков» — React + TypeScript + Vite + Supabase.
 
-**Сайт:** https://arhiv-zvukov.pages.dev (Cloudflare Pages) · https://olga090403.github.io/arhiv-zvukov/ (GitHub Pages)
+**Сайт (работает):** https://olga090403.github.io/arhiv-zvukov/
 
 ## Локальный запуск
 
