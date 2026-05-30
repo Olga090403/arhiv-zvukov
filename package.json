@@ -8,7 +8,7 @@
     "build": "node scripts/generate-seo.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "pages:build": "npm run build",
+    "pages:build": "npm run build && node scripts/postbuild-pages.mjs",
     "pages:preview": "wrangler pages dev dist",
     "cf:deploy": "npm run build && node scripts/prepare-cf-dist.mjs && wrangler pages deploy dist --project-name=arhiv-zvukov --commit-dirty=true",
     "seed:sounds": "node scripts/seed-sounds.mjs"

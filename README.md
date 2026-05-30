@@ -2,6 +2,8 @@
 
 Веб-клиент «Архив звуков» — React + TypeScript + Vite + Supabase.
 
+**Сайт:** https://olga090403.github.io/arhiv-zvukov/
+
 ## Локальный запуск
 
 ```bash
