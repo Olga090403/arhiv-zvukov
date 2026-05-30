@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "pages:build": "npm run build && node scripts/postbuild-pages.mjs",
     "pages:preview": "wrangler pages dev dist",
-    "cf:deploy": "npm run build && node scripts/prepare-cf-dist.mjs && wrangler pages deploy dist --project-name=arhiv-zvukov --commit-dirty=true",
+    "cf:build": "npm run build && node scripts/prepare-cf-dist.mjs",
+    "cf:deploy": "npm run cf:build && wrangler pages deploy dist --project-name=arhiv-zvukov --commit-dirty=true",
     "seed:sounds": "node scripts/seed-sounds.mjs"
   },
   "dependencies": {

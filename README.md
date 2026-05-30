@@ -2,7 +2,7 @@
 
 Веб-клиент «Архив звуков» — React + TypeScript + Vite + Supabase.
 
-**Сайт:** https://olga090403.github.io/arhiv-zvukov/
+**Сайт:** https://arhiv-zvukov.pages.dev (Cloudflare Pages) · https://olga090403.github.io/arhiv-zvukov/ (GitHub Pages)
 
 ## Локальный запуск
 
@@ -40,6 +40,20 @@ npm run build
 | `DO_SPACES_SECRET` | нет | Secret key Spaces (только server-side / Edge Function) |
 
 Файл `.env.local` не коммитится (см. `.gitignore`).
+
+### Cloudflare Pages
+
+```bash
+# 1. Токен: https://dash.cloudflare.com/profile/api-tokens (шаблон Edit Cloudflare Workers)
+# 2. Account ID — в правой колонке дашборда Cloudflare
+# Добавьте в .env.local: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+powershell -File scripts/setup-cloudflare-pages.ps1   # секреты в GitHub Actions
+# или локально:
+npx wrangler login
+$env:VITE_SITE_URL="https://arhiv-zvukov.pages.dev"; $env:VITE_BASE_PATH="/"; npm run cf:deploy
+```
+
+Автодеплой: push в `master` → workflow `.github/workflows/deploy-cloudflare.yml`
 
 ### Мобильный companion (Expo)
 

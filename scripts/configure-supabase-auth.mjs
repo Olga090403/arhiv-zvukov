@@ -9,10 +9,11 @@
  */
 
 const PROJECT_REF = "uggsrgwyymivzntnopze";
-const SITE_URL = process.env.SITE_URL ?? "https://olga090403.github.io/arhiv-zvukov";
+const SITE_URL = process.env.SITE_URL ?? "https://arhiv-zvukov.pages.dev";
 
 const REDIRECT_URLS = [
   `${SITE_URL}/**`,
+  "https://arhiv-zvukov.pages.dev/**",
   "https://olga090403.github.io/arhiv-zvukov/**",
   "https://arhiv-zvukov.netlify.app/**",
   "http://localhost:5173/**",
